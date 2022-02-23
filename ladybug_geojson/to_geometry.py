@@ -1,4 +1,4 @@
-'''Functions to create Ladybug geometries from GEOJSON strings.'''
+'''Functions to create Ladybug geometries from GEOJSON geometry strings.'''
 import json
 from ._validator import _Validator
 try:
@@ -31,3 +31,36 @@ def to_vector2d(json_string: str) -> Vector2D:
     obj = json.loads(json_string)
     arr = obj.get('coordinates')
     return Vector2D.from_array(arr)
+
+def to_point2d(json_string: str) -> Point2D:
+    '''Ladybug Point2D from GEOJSON Point.'''
+    validator = _Validator(json_string)
+    if not validator.is_valid:
+        return
+
+    obj = json.loads(json_string)
+    arr = obj.get('coordinates')
+    return Point2D.from_array(arr)
+
+
+'''____________3D GEOMETRY TRANSLATORS____________'''
+
+def to_vector3d(json_string: str) -> Vector3D:
+    '''Ladybug Vector2D from GEOJSON Point.'''
+    validator = _Validator(json_string)
+    if not validator.is_valid:
+        return
+
+    obj = json.loads(json_string)
+    arr = obj.get('coordinates')
+    return Vector3D.from_array(arr)
+
+def to_point3d(json_string: str) -> Point3D:
+    '''Ladybug Point2D from GEOJSON Point.'''
+    validator = _Validator(json_string)
+    if not validator.is_valid:
+        return
+
+    obj = json.loads(json_string)
+    arr = obj.get('coordinates')
+    return Point3D.from_array(arr)
