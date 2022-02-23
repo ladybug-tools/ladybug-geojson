@@ -54,7 +54,7 @@ class _Validator:
         valid_schema = json.loads(self._read_schema(tp))
         
         try:
-            if tp == 'Point':
+            if tp in self.VALID_GEO_TYPES:
                 validate(instance=obj, 
                     schema=valid_schema)
  

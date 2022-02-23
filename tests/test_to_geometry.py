@@ -2,10 +2,13 @@
 import pytest
 
 import json
-from ladybug_geojson.to_geometry import ( to_vector2d,
+from ladybug_geojson.to_geometry import ( 
+    to_vector2d,
     to_point2d,
     to_point3d, 
-    to_vector3d )
+    to_vector3d,
+    to_linesegment2d,
+    to_polyline2d )
 
 try:
     from ladybug_geometry.geometry2d.pointvector import Vector2D, Point2D
@@ -53,3 +56,69 @@ def test_geojson_to_point():
     assert pt_3d is not None
     assert type(pt_3d) == Point3D
     assert pt_3d == Point3D(125.6, 10.1, 10.5)
+
+def test_geojson_to_linesegment():
+    valid_2d = '''{
+        "type": "LineString", 
+        "coordinates": [
+            [11.1212678, 46.0686443],[11.1212316,46.0688409]
+        ]
+    }'''
+
+    valid_long_2d = '''{
+        "type": "LineString", 
+        "coordinates": [
+            [11.1212678, 46.0686443],[11.1212316,46.0688409], 
+            [11.1212400, 46.0700000]
+        ]
+    }'''
+
+    ln_2d = to_linesegment2d(valid_2d)
+    assert ln_2d is not None
+    assert type(ln_2d) == LineSegment2D
+    assert ln_2d == LineSegment2D \
+        .from_end_points(Point2D(11.1212678, 46.0686443),
+        Point2D(11.1212316, 46.0688409))
+    
+    # test linesegment if input > 2 pts
+    ln_cut_2d = to_linesegment2d(valid_long_2d)
+    assert ln_cut_2d is not None
+    assert type(ln_cut_2d) == LineSegment2D
+    assert ln_cut_2d == LineSegment2D \
+        .from_end_points(Point2D(11.1212678, 46.0686443),
+        Point2D(11.1212400, 46.0700000))
+    
+def test_geojson_to_polyline():
+    valid_2d = '''{
+        "type": "LineString", 
+        "coordinates": [
+            [11.1212678, 46.0686443],[11.1212316,46.0688409], 
+            [11.1212400, 46.0700000]
+        ]
+    }'''
+
+    pl_2d = to_polyline2d(valid_2d)
+    assert pl_2d is not None
+    assert type(pl_2d) == Polyline2D
+    assert pl_2d == Polyline2D(vertices=[
+            Point2D(11.1212678, 46.0686443),
+            Point2D(11.1212316,46.0688409),
+            Point2D(11.1212400, 46.0700000)])
+        
+    pl_2d = to_polyline2d(valid_2d, 
+        interpolated=True)
+    assert pl_2d.interpolated == True
+    
+    valid_2d = '''{
+        "type": "LineString", 
+        "coordinates": [
+            [11.1212678, 46.0686443],[11.1212316,46.0688409]
+        ]
+    }'''
+
+    pl_2d = to_polyline2d(valid_2d)
+    assert pl_2d is not None
+    assert type(pl_2d) == LineSegment2D
+    assert pl_2d == LineSegment2D \
+        .from_end_points(Point2D(11.1212678, 46.0686443),
+        Point2D(11.1212316, 46.0688409))
