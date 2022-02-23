@@ -11,7 +11,8 @@ from ladybug_geojson.to_geometry import (
     to_polyline2d,
     to_linesegment3d,
     to_polyline3d,
-    to_polygon2d )
+    to_polygon2d,
+    to_face3d )
 
 try:
     from ladybug_geometry.geometry2d.pointvector import Vector2D, Point2D
@@ -194,3 +195,45 @@ def test_geojson_to_polygon():
     assert pl_2d is not None
     assert type(pl_2d) == Polygon2D
     assert pl_2d == Polygon2D.from_shape_with_holes(boundary, holes)
+
+def test_geojson_to_face():
+    valid_2d = '''{
+        "type": "Polygon", 
+        "coordinates": [
+            [[35, 10], [45, 45], [15, 40], [10, 20], [35, 10]]
+        ]
+    }'''
+
+    boundary = [
+        Point3D(35, 10, 0),
+        Point3D(45, 45, 0),
+        Point3D(15, 40, 0),
+        Point3D(10, 20, 0)
+    ]
+
+    vertices = [Point3D.from_array(_) for _ in boundary]
+
+    face = to_face3d(valid_2d)
+    assert face is not None
+    assert type(face) == Face3D
+    assert face == Face3D(boundary=vertices)
+
+    valid_2d = '''{
+        "type": "Polygon", 
+        "coordinates": [
+            [[35, 10], [45, 45], [15, 40], [10, 20], [35, 10]], 
+            [[20, 30], [35, 35], [30, 20], [20, 30]]
+        ]
+    }'''
+
+    holes = [[
+        Point3D(20, 30, 0),
+        Point3D(35, 35, 0),
+        Point3D(30, 20, 0)
+    ]]
+
+    face = to_face3d(valid_2d)
+    assert face is not None
+    assert type(face) == Face3D
+    assert face == Face3D(boundary=boundary, 
+        holes=holes)

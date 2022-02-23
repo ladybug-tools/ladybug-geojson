@@ -75,7 +75,7 @@ def to_linesegment2d(json_string: str) -> LineSegment2D:
 
 def to_polyline2d(json_string: str, 
     interpolated: Optional[bool]=False) -> Union[Polyline2D, LineSegment2D]:
-    '''Ladybug Polyline2D from a Rhino PolyLineCurve.
+    '''Ladybug Polyline2D from a GEOJSON LineString.
     A LineSegment2D will be returned if the input polyline has only two points.
 
     Args:
@@ -93,15 +93,13 @@ def to_polyline2d(json_string: str,
     return pol if not interpolated else Polyline2D(pol.vertices, interpolated)
 
 def to_polygon2d(json_string: str) -> Polygon2D:
-    '''Ladybug Polyline2D from a Rhino PolyLineCurve.
-    A LineSegment2D will be returned if the input polyline has only two points.
+    '''Ladybug Polygon2D from a GEOJSON Polygon.
 
     Args:
         json_string: GEOJSON geometry string to translate
-        interpolated: set it to true to create smooth polylines
     '''
     def to_pt(arr):
-        return Point2D.from_array(arr)        
+        return Point2D.from_array(arr)
 
     arr = _get_coordinates(json_string)
     if not arr:
@@ -117,6 +115,21 @@ def to_polygon2d(json_string: str) -> Polygon2D:
         _[:-1])) for _ in arr[1:]]
     
     return Polygon2D.from_shape_with_holes(boundary, holes)
+
+# def to_mesh2d(json_string: str) -> Mesh2D:
+#     '''Ladybug Mesh2D from a GEOJSON Polygon.
+
+#     Args:
+#         json_string: GEOJSON geometry string to translate
+#     '''
+#     def to_pt(arr):
+#         return Point2D.from_array(arr)
+
+#     arr = _get_coordinates(json_string)
+#     if not arr:
+#         return
+    
+#     # TODO: continue
 
 '''____________3D GEOMETRY TRANSLATORS____________'''
 
@@ -179,3 +192,33 @@ def to_polyline3d(json_string: str,
 
     pol = Polyline3D.from_array(arr)
     return pol if not interpolated else Polyline3D(pol.vertices, interpolated)
+
+def to_face3d(json_string: str,
+    missing_coordinate: Optional[float]=0.0) -> Face3D:
+    '''Ladybug Face3D from a GEOJSON Polygon.
+
+    Args:
+        json_string: GEOJSON geometry string to translate
+        missing_coordinate: it is used if z is missing.
+    '''
+    def to_pt(arr):
+        out = arr[::]
+        if len(arr) == 2:
+            out.append(missing_coordinate)
+        return Point3D.from_array(out)
+
+    arr = _get_coordinates(json_string)
+    if not arr:
+        return
+
+    boundary = arr[0][:-1]
+    boundary = list(map(to_pt, boundary))
+
+    if len(arr) == 1:
+        return Face3D(boundary=boundary)
+    
+    holes = [list(map(to_pt, 
+        _[:-1])) for _ in arr[1:]]
+    
+    return Face3D(boundary=boundary, 
+        holes=holes)
