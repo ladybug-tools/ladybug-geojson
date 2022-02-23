@@ -2,7 +2,7 @@
 import json
 from enum import ( Enum, unique )
 from pathlib import Path
-from argparse import ArgumentError
+from typing import List
 from jsonschema import ( validate, 
     ValidationError, 
     SchemaError )
@@ -28,38 +28,36 @@ class _Validator:
     '''Class for geojson validation.
     Args:
         json: input JSON string 
-    Properties:
-        * is_valid
+        target: list of GeojSONTypes used for validation
     '''
-    __slots__ = ('_json', '_target')
+    __slots__ = ('_selection')
 
     def __init__(self, 
         json: str,
-        target: GeojSONTypes):
-        self._json = json
-        self._target = target
+        target: List[GeojSONTypes]):
+
+        self._selection = self._validation(json, 
+            target)
 
     @property
-    def is_valid(self):
-        ''' JSON string is valid '''
-        return self._validation()
-    
-    @property
-    def target(self):
-        ''' JSON type target '''
-        return self._target
-    
-    def _validation(self):
+    def selection(self):
+        ''' Schema used '''
+        return self._selection
+
+    def _validation(self, 
+        data: str, 
+        target: List[GeojSONTypes]):
         # get geojson type
-        obj = json.loads(self._json)
+        obj = json.loads(data)
         
         # type key not found
         tp = obj.get('type')
         if not tp:
             return
-
+        
         # skip if it is not the target
-        if self._target.value != tp:
+        target_values = [_.value for _ in target]
+        if tp not in target_values:
             return
 
         if not GeojSONTypes.has_value(tp):
@@ -67,7 +65,7 @@ class _Validator:
             'not a valid key.')
 
         # get geojson schema
-        valid_schema = json.loads(self._read_schema())
+        valid_schema = json.loads(self._read_schema(tp))
         
         try:
             validate(instance=obj, 
@@ -85,12 +83,13 @@ class _Validator:
             print(e)
             return
         
-        return True
+        return GeojSONTypes(tp)
 
-    def _read_schema(self):
+    def _read_schema(self,
+        type: str):
         ''' Read geojson schema '''
         env_path = Path(__file__).parent
-        schema_name = self._target.value.lower() + '.json'
+        schema_name = type.lower() + '.json'
         schema = env_path.joinpath(self.SCHEMA_PATH, schema_name)
         text = schema.read_text()
         return text

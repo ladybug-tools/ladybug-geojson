@@ -12,11 +12,11 @@ def test_json_point_validation():
     valid = '{"type": "Point","coordinates": [125.6, 10.1]}'
     invalid = '{"type": "Point"}'
 
-    validator = _Validator(valid, GeojSONTypes.POINT)
-    assert validator.is_valid == True
+    validator = _Validator(valid, [GeojSONTypes.POINT])
+    assert validator.selection == GeojSONTypes.POINT
 
-    validator = _Validator(invalid, GeojSONTypes.POINT)
-    assert validator.is_valid != True
+    validator = _Validator(invalid, [GeojSONTypes.POINT])
+    assert validator.selection != GeojSONTypes.POINT
 
 def test_json_linestring_validation():
     valid = '''{"type": "LineString", 
@@ -26,11 +26,11 @@ def test_json_linestring_validation():
     invalid = '''{"type": "LineString", 
     "coordinates":[[11.1212316,46.0688409]]}'''
     
-    validator = _Validator(valid, GeojSONTypes.LINESTRING)
-    assert validator.is_valid == True
+    validator = _Validator(valid, [GeojSONTypes.LINESTRING])
+    assert validator.selection == GeojSONTypes.LINESTRING
 
-    validator = _Validator(invalid, GeojSONTypes.LINESTRING)
-    assert validator.is_valid != True
+    validator = _Validator(invalid, [GeojSONTypes.LINESTRING])
+    assert validator.selection != GeojSONTypes.LINESTRING
 
 def test_json_polygon_validation():
     # polygon with hole
@@ -49,8 +49,8 @@ def test_json_polygon_validation():
         ]
     }'''
     
-    validator = _Validator(valid, GeojSONTypes.POLYGON)
-    assert validator.is_valid == True
+    validator = _Validator(valid, [GeojSONTypes.POLYGON])
+    assert validator.selection == GeojSONTypes.POLYGON
 
-    validator = _Validator(invalid, GeojSONTypes.POLYGON)
-    assert validator.is_valid != True
+    validator = _Validator(invalid, [GeojSONTypes.POLYGON])
+    assert validator.selection != GeojSONTypes.POLYGON
