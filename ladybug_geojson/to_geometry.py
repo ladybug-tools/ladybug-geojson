@@ -36,18 +36,21 @@ def _get_coordinates(json_string: str,
 
 '''____________2D GEOMETRY TRANSLATORS____________'''
 
-def to_vector2d(json_string: str) -> Vector2D:
-    '''Ladybug Vector2D from GEOJSON Point.
+def to_vector2d(json_string: str) -> Union[Vector2D, List[Vector2D]]:
+    '''Ladybug Vector2D from GEOJSON Point or Multipoint.
         
     Args:
         json_string: GEOJSON geometry string to translate
     '''
     arr, schema_used = _get_coordinates(json_string, 
-        target=[GeojSONTypes.POINT])
+        target=[GeojSONTypes.POINT, GeojSONTypes.MULTIPOINT])
     if not arr:
         return
 
-    return Vector2D.from_array(arr)
+    if schema_used == GeojSONTypes.POINT:
+        return Vector2D.from_array(arr)
+    else:
+        return [Vector2D.from_array(_) for _ in arr]
 
 def to_point2d(json_string: str) -> Point2D:
     '''Ladybug Point2D from GEOJSON Point.

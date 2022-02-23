@@ -18,6 +18,28 @@ def test_json_point_validation():
     validator = _Validator(invalid, [GeojSONTypes.POINT])
     assert validator.selection != GeojSONTypes.POINT
 
+    valid = '''
+    {
+        "type": "MultiPoint", 
+        "coordinates": [
+            [10, 40], [40, 30], [20, 20], [30, 10]
+        ]
+    }
+    '''
+    invalid = '''
+    {
+        "type": "MultiPoint", 
+        "coordinates": [
+            [10]
+        ]
+    }'''
+
+    validator = _Validator(valid, [GeojSONTypes.MULTIPOINT])
+    assert validator.selection == GeojSONTypes.MULTIPOINT
+
+    validator = _Validator(invalid, [GeojSONTypes.MULTIPOINT])
+    assert validator.selection != GeojSONTypes.MULTIPOINT
+
 def test_json_linestring_validation():
     valid = '''{"type": "LineString", 
         "coordinates":[[11.1212678, 46.0686443],

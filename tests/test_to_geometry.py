@@ -1,4 +1,5 @@
 # coding=utf-8
+from typing import List
 import pytest
 
 import json
@@ -46,6 +47,24 @@ def test_geojson_to_vector():
     assert vec_3d is not None
     assert type(vec_3d) == Vector3D
     assert vec_3d == Vector3D(125.6, 10.1, 10.5)
+
+    multi_valid = '''
+    {
+        "type": "MultiPoint", 
+        "coordinates": [
+            [10, 40], [40, 30], [20, 20], [30, 10]
+        ]
+    }
+    '''
+    vec_2d = to_vector2d(multi_valid)
+    assert vec_2d is not None
+    assert type(vec_2d) == list
+    assert vec_2d == [
+        Vector2D(10, 40),
+        Vector2D(40, 30),
+        Vector2D(20, 20),
+        Vector2D(30, 10)
+    ]
 
 def test_geojson_to_point():
     valid_2d = '{"type": "Point","coordinates": [125.6, 10.1]}'
