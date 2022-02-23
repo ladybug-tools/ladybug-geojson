@@ -72,7 +72,6 @@ class _Validator:
         
         return True
 
-
     def _read_schema(self, 
         type: str):
         ''' Read geojson schema '''
@@ -82,9 +81,3 @@ class _Validator:
         schema = env_path.joinpath(self.SCHEMA_PATH, schema_name)
         text = schema.read_text()
         return text
-
-
-  
-
-
-  
