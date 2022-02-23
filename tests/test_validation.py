@@ -2,7 +2,8 @@
 import pytest
 
 import json
-from ladybug_geojson._validator import _Validator
+from ladybug_geojson._validator import ( _Validator,
+    GeojSONTypes )
 
 # https://geojson.org/schema/Point.json
 # https://geojson.org/
@@ -11,10 +12,10 @@ def test_json_point_validation():
     valid = '{"type": "Point","coordinates": [125.6, 10.1]}'
     invalid = '{"type": "Point"}'
 
-    validator = _Validator(valid)
+    validator = _Validator(valid, GeojSONTypes.POINT)
     assert validator.is_valid == True
 
-    validator = _Validator(invalid)
+    validator = _Validator(invalid, GeojSONTypes.POINT)
     assert validator.is_valid != True
 
 def test_json_linestring_validation():
@@ -25,10 +26,10 @@ def test_json_linestring_validation():
     invalid = '''{"type": "LineString", 
     "coordinates":[[11.1212316,46.0688409]]}'''
     
-    validator = _Validator(valid)
+    validator = _Validator(valid, GeojSONTypes.LINESTRING)
     assert validator.is_valid == True
 
-    validator = _Validator(invalid)
+    validator = _Validator(invalid, GeojSONTypes.LINESTRING)
     assert validator.is_valid != True
 
 def test_json_polygon_validation():
@@ -48,8 +49,8 @@ def test_json_polygon_validation():
         ]
     }'''
     
-    validator = _Validator(valid)
+    validator = _Validator(valid, GeojSONTypes.POLYGON)
     assert validator.is_valid == True
 
-    validator = _Validator(invalid)
+    validator = _Validator(invalid, GeojSONTypes.POLYGON)
     assert validator.is_valid != True
