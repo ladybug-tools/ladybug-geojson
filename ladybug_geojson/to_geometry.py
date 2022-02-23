@@ -127,3 +127,45 @@ def to_point3d(json_string: str) -> Point3D:
     obj = json.loads(json_string)
     arr = obj.get(COORDINATES)
     return Point3D.from_array(arr)
+
+
+def to_linesegment3d(json_string: str) -> LineSegment3D:
+    '''Ladybug LineSegment3D from GEOJSON LineString.
+    
+    Args:
+        json_string: GEOJSON geometry string to translate
+    '''
+    validator = _Validator(json_string)
+    if not validator.is_valid:
+        return
+    
+    obj = json.loads(json_string)
+    arr = obj.get(COORDINATES)
+
+    if len(arr) > 2:
+        arr =  arr[::len(arr)-1]
+
+    return LineSegment3D.from_array(arr)
+
+
+def to_polyline3d(json_string: str, 
+    interpolated: Optional[bool]=False) -> Union[Polyline3D, LineSegment3D]:
+    '''Ladybug Polyline3D from a Rhino PolyLineCurve.
+    A LineSegment3D will be returned if the input polyline has only two points.
+
+    Args:
+        json_string: GEOJSON geometry string to translate
+        interpolated: set it to true to create smooth polylines
+    '''
+    validator = _Validator(json_string)
+    if not validator.is_valid:
+        return
+    
+    obj = json.loads(json_string)
+    arr = obj.get(COORDINATES)
+
+    if len(arr) == 2:
+        return LineSegment3D.from_array(arr)
+
+    pol = Polyline3D.from_array(arr)
+    return pol if not interpolated else Polyline3D(pol.vertices, interpolated)

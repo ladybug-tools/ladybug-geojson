@@ -8,7 +8,9 @@ from ladybug_geojson.to_geometry import (
     to_point3d, 
     to_vector3d,
     to_linesegment2d,
-    to_polyline2d )
+    to_polyline2d,
+    to_linesegment3d,
+    to_polyline3d )
 
 try:
     from ladybug_geometry.geometry2d.pointvector import Vector2D, Point2D
@@ -88,6 +90,19 @@ def test_geojson_to_linesegment():
         .from_end_points(Point2D(11.1212678, 46.0686443),
         Point2D(11.1212400, 46.0700000))
     
+    valid_3d = '''{
+        "type": "LineString", 
+        "coordinates": [
+            [11.1212678, 46.0686443, 1],[11.1212316,46.0688409, 2]
+        ]
+    }'''
+
+    ln_3d = to_linesegment3d(valid_3d)
+    assert ln_3d is not None
+    assert type(ln_3d) == LineSegment3D
+    assert ln_3d.p1 == Point3D(11.1212678, 46.0686443, 1)
+
+
 def test_geojson_to_polyline():
     valid_2d = '''{
         "type": "LineString", 
@@ -122,3 +137,18 @@ def test_geojson_to_polyline():
     assert pl_2d == LineSegment2D \
         .from_end_points(Point2D(11.1212678, 46.0686443),
         Point2D(11.1212316, 46.0688409))
+
+
+    valid_3d = '''{
+        "type": "LineString", 
+        "coordinates": [
+            [11.1212678, 46.0686443, 1],[11.1212316,46.0688409, 2]
+        ]
+    }'''
+
+    pl_3d = to_polyline3d(valid_3d)
+    assert pl_3d is not None
+    assert type(pl_3d) == LineSegment3D
+    assert pl_3d == LineSegment3D \
+        .from_end_points(Point3D(11.1212678, 46.0686443, 1),
+        Point3D(11.1212316,46.0688409, 2))
