@@ -92,6 +92,31 @@ def to_polyline2d(json_string: str,
     pol = Polyline2D.from_array(arr)
     return pol if not interpolated else Polyline2D(pol.vertices, interpolated)
 
+def to_polygon2d(json_string: str) -> Polygon2D:
+    '''Ladybug Polyline2D from a Rhino PolyLineCurve.
+    A LineSegment2D will be returned if the input polyline has only two points.
+
+    Args:
+        json_string: GEOJSON geometry string to translate
+        interpolated: set it to true to create smooth polylines
+    '''
+    def to_pt(arr):
+        return Point2D.from_array(arr)        
+
+    arr = _get_coordinates(json_string)
+    if not arr:
+        return
+
+    boundary = arr[0][:-1]
+
+    if len(arr) == 1:
+        return Polygon2D.from_array(boundary)
+    
+    boundary = list(map(to_pt, boundary))
+    holes = [list(map(to_pt, 
+        _[:-1])) for _ in arr[1:]]
+    
+    return Polygon2D.from_shape_with_holes(boundary, holes)
 
 '''____________3D GEOMETRY TRANSLATORS____________'''
 

@@ -30,3 +30,26 @@ def test_json_linestring_validation():
 
     validator = _Validator(invalid)
     assert validator.is_valid != True
+
+def test_json_polygon_validation():
+    # polygon with hole
+    valid = '''{
+        "type": "Polygon", 
+        "coordinates": [
+            [[35, 10], [45, 45], [15, 40], [10, 20], [35, 10]], 
+            [[20, 30], [35, 35], [30, 20], [20, 30]]
+        ]
+    }'''
+    
+    invalid = '''{
+    "type": "Polygon", 
+        "coordinates": [
+            [[35, 10], [45, 45], [15, 40]]
+        ]
+    }'''
+    
+    validator = _Validator(valid)
+    assert validator.is_valid == True
+
+    validator = _Validator(invalid)
+    assert validator.is_valid != True

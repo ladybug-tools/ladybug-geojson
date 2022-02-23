@@ -10,7 +10,8 @@ from ladybug_geojson.to_geometry import (
     to_linesegment2d,
     to_polyline2d,
     to_linesegment3d,
-    to_polyline3d )
+    to_polyline3d,
+    to_polygon2d )
 
 try:
     from ladybug_geometry.geometry2d.pointvector import Vector2D, Point2D
@@ -152,3 +153,44 @@ def test_geojson_to_polyline():
     assert pl_3d == LineSegment3D \
         .from_end_points(Point3D(11.1212678, 46.0686443, 1),
         Point3D(11.1212316,46.0688409, 2))
+
+def test_geojson_to_polygon():
+    valid_2d = '''{
+        "type": "Polygon", 
+        "coordinates": [
+            [[35, 10], [45, 45], [15, 40], [10, 20], [35, 10]]
+        ]
+    }'''
+
+    boundary = [
+        Point2D(35, 10),
+        Point2D(45, 45),
+        Point2D(15, 40),
+        Point2D(10, 20)
+    ]
+
+    vertices = [Point2D.from_array(_) for _ in boundary]
+
+    pl_2d = to_polygon2d(valid_2d)
+    assert pl_2d is not None
+    assert type(pl_2d) == Polygon2D
+    assert pl_2d == Polygon2D(vertices)
+
+    valid_2d = '''{
+        "type": "Polygon", 
+        "coordinates": [
+            [[35, 10], [45, 45], [15, 40], [10, 20], [35, 10]], 
+            [[20, 30], [35, 35], [30, 20], [20, 30]]
+        ]
+    }'''
+
+    holes = [[
+        Point2D(20, 30),
+        Point2D(35, 35),
+        Point2D(30, 20)
+    ]]
+
+    pl_2d = to_polygon2d(valid_2d)
+    assert pl_2d is not None
+    assert type(pl_2d) == Polygon2D
+    assert pl_2d == Polygon2D.from_shape_with_holes(boundary, holes)
