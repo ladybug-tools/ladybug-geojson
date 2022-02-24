@@ -141,6 +141,25 @@ def test_geojson_to_linesegment():
     assert type(ln_3d) == LineSegment3D
     assert ln_3d.p1 == Point3D(11.1212678, 46.0686443, 1)
 
+    # it will use first and last point
+    multi_valid_2d = '''{
+        "type": "MultiLineString", 
+        "coordinates": [
+            [[10, 10], [20, 20], [10, 40]], 
+            [[40, 40], [30, 30], [40, 20], [30, 10]]
+        ]
+    }'''
+
+    ln_2d = to_linesegment2d(multi_valid_2d)
+    assert ln_2d is not None
+    assert type(ln_2d) == list
+    assert ln_2d == [LineSegment2D \
+        .from_end_points(Point2D(10, 10),
+        Point2D(10, 40)),
+        LineSegment2D \
+        .from_end_points(Point2D(40, 40),
+        Point2D(30, 10))]
+
 
 def test_geojson_to_polyline():
     valid_2d = '''{
@@ -191,6 +210,31 @@ def test_geojson_to_polyline():
     assert pl_3d == LineSegment3D \
         .from_end_points(Point3D(11.1212678, 46.0686443, 1),
         Point3D(11.1212316,46.0688409, 2))
+    
+    valid_2d = '''{
+        "type": "MultiLineString", 
+        "coordinates": [
+            [[10, 10], [20, 20], [10, 40]], 
+            [[40, 40], [30, 30], [40, 20], [30, 10]]
+        ]
+    }'''
+
+    pl_2d = to_polyline2d(valid_2d)
+    assert pl_2d is not None
+    assert type(pl_2d) == list
+    assert pl_2d == [
+        Polyline2D(vertices=[
+                Point2D(10, 10),
+                Point2D(20, 20),
+                Point2D(10, 40)
+                ]),
+        Polyline2D(vertices=[
+                Point2D(40, 40),
+                Point2D(30, 30),
+                Point2D(40, 20),
+                Point2D(30, 10)
+                ]),   
+            ]
 
 def test_geojson_to_polygon():
     valid_2d = '''{
