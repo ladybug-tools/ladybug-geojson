@@ -80,6 +80,24 @@ def test_geojson_to_point():
     assert type(pt_3d) == Point3D
     assert pt_3d == Point3D(125.6, 10.1, 10.5)
 
+    multi_valid = '''
+    {
+        "type": "MultiPoint", 
+        "coordinates": [
+            [10, 40], [40, 30], [20, 20], [30, 10]
+        ]
+    }
+    '''
+    pt_2d = to_point2d(multi_valid)
+    assert pt_2d is not None
+    assert type(pt_2d) == list
+    assert pt_2d == [
+        Point2D(10, 40),
+        Point2D(40, 30),
+        Point2D(20, 20),
+        Point2D(30, 10)
+    ]
+
 def test_geojson_to_linesegment():
     valid_2d = '''{
         "type": "LineString", 
@@ -116,7 +134,7 @@ def test_geojson_to_linesegment():
         "coordinates": [
             [11.1212678, 46.0686443, 1],[11.1212316,46.0688409, 2]
         ]
-    }'''
+    }''' 
 
     ln_3d = to_linesegment3d(valid_3d)
     assert ln_3d is not None

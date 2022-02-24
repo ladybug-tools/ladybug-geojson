@@ -59,11 +59,14 @@ def to_point2d(json_string: str) -> Point2D:
         json_string: GEOJSON geometry string to translate
     '''
     arr, schema_used = _get_coordinates(json_string,
-        target=[GeojSONTypes.POINT])
+        target=[GeojSONTypes.POINT, GeojSONTypes.MULTIPOINT])
     if not arr:
         return
-    
-    return Point2D.from_array(arr)
+
+    if schema_used == GeojSONTypes.POINT:
+        return Point2D.from_array(arr)
+    else:
+        return [Point2D.from_array(_) for _ in arr]
 
 def to_linesegment2d(json_string: str) -> LineSegment2D:
     '''Ladybug LineSegment2D from GEOJSON LineString.
@@ -151,11 +154,14 @@ def to_vector3d(json_string: str) -> Vector3D:
         json_string: GEOJSON geometry string to translate
     '''
     arr, schema_used = _get_coordinates(json_string,
-        target=[GeojSONTypes.POINT])
+        target=[GeojSONTypes.POINT, GeojSONTypes.MULTIPOINT])
     if not arr:
         return
     
-    return Vector3D.from_array(arr)
+    if schema_used == GeojSONTypes.POINT:
+        return Vector3D.from_array(arr)
+    else:
+        return [Vector3D.from_array(_) for _ in arr]
 
 def to_point3d(json_string: str) -> Point3D:
     '''Ladybug Point2D from GEOJSON Point.
@@ -164,12 +170,14 @@ def to_point3d(json_string: str) -> Point3D:
         json_string: GEOJSON geometry string to translate
     '''
     arr, schema_used = _get_coordinates(json_string,
-        target=[GeojSONTypes.POINT])
+        target=[GeojSONTypes.POINT, GeojSONTypes.MULTIPOINT])
     if not arr:
         return
 
-    return Point3D.from_array(arr)
-
+    if schema_used == GeojSONTypes.POINT:
+        return Point3D.from_array(arr)
+    else:
+        return [Point3D.from_array(_) for _ in arr]
 
 def to_linesegment3d(json_string: str) -> LineSegment3D:
     '''Ladybug LineSegment3D from GEOJSON LineString.

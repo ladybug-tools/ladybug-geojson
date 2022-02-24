@@ -40,6 +40,17 @@ def test_json_point_validation():
     validator = _Validator(invalid, [GeojSONTypes.MULTIPOINT])
     assert validator.selection != GeojSONTypes.MULTIPOINT
 
+    valid = '''
+    {
+        "type": "MultiPoint", 
+        "coordinates": [
+            [10, 40, 0], [40, 30, 2], [20, 20, 4], [30, 10, 5]
+        ]
+    }'''
+
+    validator = _Validator(valid, [GeojSONTypes.MULTIPOINT])
+    assert validator.selection == GeojSONTypes.MULTIPOINT
+
 def test_json_linestring_validation():
     valid = '''{"type": "LineString", 
         "coordinates":[[11.1212678, 46.0686443],
@@ -53,6 +64,28 @@ def test_json_linestring_validation():
 
     validator = _Validator(invalid, [GeojSONTypes.LINESTRING])
     assert validator.selection != GeojSONTypes.LINESTRING
+
+    valid = '''{
+        "type": "MultiLineString", 
+        "coordinates": [
+            [[10, 10], [20, 20], [10, 40]], 
+            [[40, 40], [30, 30], [40, 20], [30, 10]]
+        ]
+    }'''
+        
+    invalid = '''{
+        "type": "MultiLineString", 
+        "coordinates": [
+            [[10, 10]], 
+            [[40, 40], [30, 30], [40, 20], [30, 10]]
+        ]
+    }'''
+    
+    validator = _Validator(valid, [GeojSONTypes.MULTILINESTRING])
+    assert validator.selection == GeojSONTypes.MULTILINESTRING
+
+    validator = _Validator(invalid, [GeojSONTypes.MULTILINESTRING])
+    assert validator.selection != GeojSONTypes.MULTILINESTRING
 
 def test_json_polygon_validation():
     # polygon with hole
