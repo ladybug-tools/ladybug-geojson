@@ -164,8 +164,9 @@ def to_polygon2d(json_string: str) -> Polygon2D:
     
 
 def to_mesh2d(json_string: str,
-    missing_coordinate: Optional[float]=0.0) -> Mesh2D:
-    '''Ladybug Mesh2D from a GEOJSON Polygon.
+    missing_coordinate: Optional[float]=0.0) -> \
+        Union[Mesh2D, List[Mesh2D]]:
+    '''Ladybug Mesh2D from a GEOJSON Polygon or MultiPolygon.
 
     Args:
         json_string: GEOJSON geometry string to translate
@@ -175,7 +176,10 @@ def to_mesh2d(json_string: str,
     
     if not face:
         return
-
+    
+    if type(face) == list:
+        return [_.triangulated_mesh2d for _ in face]
+    
     return face.triangulated_mesh2d
 
 '''____________3D GEOMETRY TRANSLATORS____________'''
@@ -275,8 +279,9 @@ def to_polyline3d(json_string: str,
 
 
 def to_face3d(json_string: str,
-    missing_coordinate: Optional[float]=0.0) -> Face3D:
-    '''Ladybug Face3D from a GEOJSON Polygon.
+    missing_coordinate: Optional[float]=0.0) -> \
+        Union[Face3D, List[Face3D]]:
+    '''Ladybug Face3D from a GEOJSON Polygon or MultiPolygon.
 
     Args:
         json_string: GEOJSON geometry string to translate
@@ -287,20 +292,45 @@ def to_face3d(json_string: str,
         if len(arr) == 2:
             out.append(missing_coordinate)
         return Point3D.from_array(out)
+    
+    def to_face(arr):
+        boundary = arr[0][:-1]
+        boundary = list(map(to_pt, boundary))
+
+        if len(arr) == 1:
+            return Face3D(boundary=boundary)
+        
+        holes = [list(map(to_pt, 
+            _[:-1])) for _ in arr[1:]]
+        
+        return Face3D(boundary=boundary, 
+            holes=holes)
 
     arr, schema_used = _get_coordinates(json_string,
-        target=[GeojSONTypes.POLYGON])
+        target=[GeojSONTypes.POLYGON, 
+            GeojSONTypes.MULTIPOLYGON])
     if not arr:
         return
 
-    boundary = arr[0][:-1]
-    boundary = list(map(to_pt, boundary))
+    if schema_used == GeojSONTypes.POLYGON:
+        return to_face(arr)
+    else:
+        return list(map(to_face, arr))
 
-    if len(arr) == 1:
-        return Face3D(boundary=boundary)
+def to_mesh3d(json_string: str,
+    missing_coordinate: Optional[float]=0.0) -> Mesh2D:
+    '''Ladybug Mesh3D from a GEOJSON Polygon or MultiPolygon.
+
+    Args:
+        json_string: GEOJSON geometry string to translate
+    '''
+    face = to_face3d(json_string=json_string,
+        missing_coordinate=missing_coordinate)
     
-    holes = [list(map(to_pt, 
-        _[:-1])) for _ in arr[1:]]
+    if not face:
+        return
     
-    return Face3D(boundary=boundary, 
-        holes=holes)
+    if type(face) == list:
+        return [_.triangulated_mesh3d for _ in face]
+    
+    return face.triangulated_mesh3d

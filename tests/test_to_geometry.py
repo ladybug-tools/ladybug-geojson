@@ -14,7 +14,8 @@ from ladybug_geojson.to_geometry import (
     to_linesegment3d,
     to_polyline3d,
     to_polygon2d,
-    to_face3d )
+    to_face3d,
+    to_mesh3d )
 
 try:
     from ladybug_geometry.geometry2d.pointvector import Vector2D, Point2D
@@ -383,3 +384,25 @@ def test_geojson_to_mesh():
     assert mesh is not None
     assert type(mesh) == Mesh2D
     assert mesh == Face3D(boundary=vertices).triangulated_mesh2d
+
+    mesh = to_mesh3d(valid_2d)
+    assert mesh is not None
+    assert type(mesh) == Mesh3D
+    assert mesh == Face3D(boundary=vertices).triangulated_mesh3d
+
+    valid_2d = '''{
+        "type": "MultiPolygon", 
+        "coordinates": [
+            [
+                [[40, 40], [20, 45], [45, 30], [40, 40]]
+            ], 
+            [
+                [[20, 35], [10, 30], [10, 10], [30, 5], [45, 20], [20, 35]], 
+                [[30, 20], [20, 15], [20, 25], [30, 20]]
+            ]
+        ]
+    }'''
+
+    mesh = to_mesh2d(valid_2d)
+    assert mesh is not None
+    assert type(mesh) == list
