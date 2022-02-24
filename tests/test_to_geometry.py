@@ -362,6 +362,49 @@ def test_geojson_to_face():
     assert type(face) == Face3D
     assert face == Face3D(boundary=boundary, 
         holes=holes)
+    
+    valid_2d = '''{
+        "type": "MultiPolygon", 
+        "coordinates": [
+            [
+                [[40, 40], [20, 45], [45, 30], [40, 40]]
+            ], 
+            [
+                [[20, 35], [10, 30], [10, 10], [30, 5], [45, 20], [20, 35]], 
+                [[30, 20], [20, 15], [20, 25], [30, 20]]
+            ]
+        ]
+    }'''
+
+    holes = [[
+        Point3D(30, 20, 0),
+        Point3D(20, 15, 0),
+        Point3D(20, 25, 0)
+    ]]
+
+    first_boundary = [
+        Point3D(40, 40, 0),
+        Point3D(20, 45, 0),
+        Point3D(45, 30, 0)
+    ]
+
+    second_boundary = [
+        Point3D(20, 35, 0),
+        Point3D(10, 30, 0),
+        Point3D(10, 10, 0),
+        Point3D(30, 5, 0),
+        Point3D(45, 20, 0)
+    ]
+
+    pl_2d = to_face3d(valid_2d, 
+        try_merge=True)
+    assert pl_2d is not None
+    assert type(pl_2d) == Polyface3D or list
+    assert pl_2d == Polyface3D.from_faces([
+        Face3D(boundary=first_boundary),
+        Face3D(boundary=second_boundary, 
+        holes=holes),
+        ], 0.001)
 
 def test_geojson_to_mesh():
     valid_2d = '''{

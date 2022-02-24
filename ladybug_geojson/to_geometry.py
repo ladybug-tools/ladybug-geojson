@@ -99,8 +99,8 @@ def to_linesegment2d(json_string: str) -> \
 
 def to_polyline2d(json_string: str, 
     interpolated: Optional[bool]=False) -> \
-        Union[Union[Polyline2D, LineSegment2D],
-        List[Union[Polyline2D, LineSegment2D]]]:
+        Union[Polyline2D, LineSegment2D,
+        List[Polyline2D], List[LineSegment2D]]:
     '''Ladybug Polyline2D from a GEOJSON LineString or MultiLineString.
     A LineSegment2D will be returned if the input polyline has only 
     two points and it is a LineString.
@@ -131,7 +131,8 @@ def to_polyline2d(json_string: str,
         return list(map(get_line_or_polyline, arr))
 
 
-def to_polygon2d(json_string: str) -> Polygon2D:
+def to_polygon2d(json_string: str) -> \
+        Union[Polygon2D, List[Polygon2D]]:
     '''Ladybug Polygon2D from a GEOJSON Polygon.
 
     Args:
@@ -247,8 +248,8 @@ def to_linesegment3d(json_string: str) -> \
 
 def to_polyline3d(json_string: str, 
     interpolated: Optional[bool]=False) -> \
-        Union[Union[Polyline3D, LineSegment3D],
-        List[Union[Polyline3D, LineSegment3D]]]:
+        Union[Polyline3D, LineSegment3D,
+        List[Polyline3D], List[LineSegment3D]]:
     '''Ladybug Polyline3D from GEOJSON LineString.
     A LineSegment3D will be returned if the input polyline has only two points.
 
@@ -279,13 +280,17 @@ def to_polyline3d(json_string: str,
 
 
 def to_face3d(json_string: str,
-    missing_coordinate: Optional[float]=0.0) -> \
+    missing_coordinate: Optional[float]=0.0,
+    try_merge: Optional[bool]=False,
+    tolerance: Optional[bool]=0.001) -> \
         Union[Face3D, List[Face3D]]:
-    '''Ladybug Face3D from a GEOJSON Polygon or MultiPolygon.
+    '''Ladybug Face3D or Polyface3D from a GEOJSON Polygon or MultiPolygon.
 
     Args:
         json_string: GEOJSON geometry string to translate
         missing_coordinate: it is used if z is missing.
+        try_merge: try to create polyface from list of faces, only if MultiPolygon.
+        tolerance: number to use as tolerance for the polyface operatation.
     '''
     def to_pt(arr):
         out = arr[::]
@@ -314,8 +319,17 @@ def to_face3d(json_string: str,
 
     if schema_used == GeojSONTypes.POLYGON:
         return to_face(arr)
-    else:
-        return list(map(to_face, arr))
+    
+    faces = list(map(to_face, arr))
+
+    # try merge
+    if try_merge:
+        try:
+            faces = Polyface3D.from_faces(faces, tolerance)
+        except:
+            pass
+    return faces
+    
 
 def to_mesh3d(json_string: str,
     missing_coordinate: Optional[float]=0.0) -> Mesh2D:
