@@ -109,3 +109,36 @@ def test_json_polygon_validation():
 
     validator = _Validator(invalid, [GeojSONTypes.POLYGON])
     assert validator.selection != GeojSONTypes.POLYGON
+
+    # polygon with hole
+    valid = '''{
+        "type": "MultiPolygon", 
+        "coordinates": [
+            [
+                [[40, 40], [20, 45], [45, 30], [40, 40]]
+            ], 
+            [
+                [[20, 35], [10, 30], [10, 10], [30, 5], [45, 20], [20, 35]], 
+                [[30, 20], [20, 15], [20, 25], [30, 20]]
+            ]
+        ]
+    }'''
+    
+    invalid = '''{
+        "type": "MultiPolygon", 
+        "coordinates": [
+            [
+                [[40, 40]]
+            ], 
+            [
+                [[20, 35], [10, 30], [10, 10], [30, 5], [45, 20], [20, 35]], 
+                [[30, 20], [20, 15], [20, 25], [30, 20]]
+            ]
+        ]
+    }'''
+    
+    validator = _Validator(valid, [GeojSONTypes.MULTIPOLYGON])
+    assert validator.selection == GeojSONTypes.MULTIPOLYGON
+
+    validator = _Validator(invalid, [GeojSONTypes.MULTIPOLYGON])
+    assert validator.selection != GeojSONTypes.MULTIPOLYGON
