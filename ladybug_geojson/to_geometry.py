@@ -139,23 +139,29 @@ def to_polygon2d(json_string: str) -> Polygon2D:
     '''
     def to_pt(arr):
         return Point2D.from_array(arr)
+    
+    def to_pol(arr):
+        boundary = arr[0][:-1]
+        if len(arr) == 1:
+            return Polygon2D.from_array(boundary)
+        
+        boundary = list(map(to_pt, boundary))
+        holes = [list(map(to_pt, 
+            _[:-1])) for _ in arr[1:]]
+        return Polygon2D.from_shape_with_holes(boundary, 
+            holes)
 
     arr, schema_used = _get_coordinates(json_string,
-        target=[GeojSONTypes.POLYGON])
+        target=[GeojSONTypes.POLYGON, 
+            GeojSONTypes.MULTIPOLYGON])
     if not arr:
         return
 
-    boundary = arr[0][:-1]
-
-    if len(arr) == 1:
-        return Polygon2D.from_array(boundary)
+    if schema_used == GeojSONTypes.POLYGON:
+        return to_pol(arr)
+    else:
+        return list(map(to_pol, arr))
     
-    boundary = list(map(to_pt, boundary))
-    holes = [list(map(to_pt, 
-        _[:-1])) for _ in arr[1:]]
-    
-    return Polygon2D.from_shape_with_holes(boundary, holes)
-
 
 def to_mesh2d(json_string: str,
     missing_coordinate: Optional[float]=0.0) -> Mesh2D:

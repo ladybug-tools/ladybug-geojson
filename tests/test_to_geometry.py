@@ -4,6 +4,7 @@ import pytest
 
 import json
 from ladybug_geojson.to_geometry import ( 
+    to_mesh2d,
     to_vector2d,
     to_point2d,
     to_point3d, 
@@ -277,6 +278,48 @@ def test_geojson_to_polygon():
     assert type(pl_2d) == Polygon2D
     assert pl_2d == Polygon2D.from_shape_with_holes(boundary, holes)
 
+    valid_2d = '''{
+        "type": "MultiPolygon", 
+        "coordinates": [
+            [
+                [[40, 40], [20, 45], [45, 30], [40, 40]]
+            ], 
+            [
+                [[20, 35], [10, 30], [10, 10], [30, 5], [45, 20], [20, 35]], 
+                [[30, 20], [20, 15], [20, 25], [30, 20]]
+            ]
+        ]
+    }'''
+
+    holes = [[
+        Point2D(30, 20),
+        Point2D(20, 15),
+        Point2D(20, 25)
+    ]]
+
+    first_boundary = [
+        Point2D(40, 40),
+        Point2D(20, 45),
+        Point2D(45, 30)
+    ]
+
+    second_boundary = [
+        Point2D(20, 35),
+        Point2D(10, 30),
+        Point2D(10, 10),
+        Point2D(30, 5),
+        Point2D(45, 20)
+    ]
+
+    pl_2d = to_polygon2d(valid_2d)
+    assert pl_2d is not None
+    assert type(pl_2d) == list
+    assert pl_2d == [
+        Polygon2D(first_boundary),
+        Polygon2D.from_shape_with_holes(second_boundary, 
+        holes),
+        ]
+
 def test_geojson_to_face():
     valid_2d = '''{
         "type": "Polygon", 
@@ -318,3 +361,25 @@ def test_geojson_to_face():
     assert type(face) == Face3D
     assert face == Face3D(boundary=boundary, 
         holes=holes)
+
+def test_geojson_to_mesh():
+    valid_2d = '''{
+        "type": "Polygon", 
+        "coordinates": [
+            [[35, 10], [45, 45], [15, 40], [10, 20], [35, 10]]
+        ]
+    }'''
+
+    boundary = [
+        Point3D(35, 10),
+        Point3D(45, 45),
+        Point3D(15, 40),
+        Point3D(10, 20)
+    ]
+
+    vertices = [Point3D.from_array(_) for _ in boundary]
+
+    mesh = to_mesh2d(valid_2d)
+    assert mesh is not None
+    assert type(mesh) == Mesh2D
+    assert mesh == Face3D(boundary=vertices).triangulated_mesh2d
