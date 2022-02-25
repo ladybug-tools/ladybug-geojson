@@ -22,6 +22,7 @@ except ImportError as e:
 '''____________RFC 7946 KEYWORDS____________'''
 
 COORDINATES = 'coordinates'
+GEOMETRY_COLLECTION = 'geometries'
 
 def _get_coordinates(json_string: str,
     target: List[GeojSONTypes]):
@@ -33,6 +34,113 @@ def _get_coordinates(json_string: str,
     obj = json.loads(json_string)
     arr = obj.get(COORDINATES)
     return arr, validator.selection
+
+def _get_geometry_collection(json_string: str,
+    target: List[GeojSONTypes]):
+    validator = _Validator(json=json_string, 
+        target=target)
+    if not validator.selection:
+        return None, None
+
+    obj = json.loads(json_string)
+    arr = obj.get(GEOMETRY_COLLECTION)
+    return arr, validator.selection
+
+'''____________COLLECTION GEOMETRY TRANSLATORS____________'''
+
+def to_collection_2d(json_string: str, 
+    interpolated: Optional[bool]=False,
+    fill_polygon: Optional[bool]=False):
+    '''Ladybug Geometry 2D from GEOJSON GeometryCollection.
+    Mapping is
+    - POINT > Point2D 
+    - MULTIPOINT > List[Point2D]
+    - LINESTRING > LineSegment2D or Polyline2D
+    - MULTILINESTRING > List[LineSegment2D] or List[Polyline2D]
+    - POLYGON > Polygon2D or Face3D (on 2D space)
+    - MULTIPOLYGON > List[Polygon2D] or List[Face3D]
+    
+    Args:
+        json_string: GEOJSON geometry string to translate
+        interpolated: set it to true to create smooth polylines
+        fill_polygon: set it to true to create faces instead of polygon
+    '''
+    arr, schema_used = _get_geometry_collection(json_string, 
+        target=[GeojSONTypes.GEOMETRYCOLLECTION])
+    if not arr:
+        return
+    
+    res = []
+    for item in arr:
+        if item.get('type') == GeojSONTypes.POINT.value:
+            item = json.dumps(item)
+            res.append(to_point2d(item))
+        elif item['type'] == GeojSONTypes.MULTIPOINT.value:
+            item = json.dumps(item)
+            res.extend(to_point2d(item))
+        elif item['type'] == GeojSONTypes.LINESTRING.value:
+            item = json.dumps(item)
+            res.append(to_polyline2d(item, interpolated))
+        elif item['type'] == GeojSONTypes.MULTILINESTRING.value:
+            item = json.dumps(item)
+            res.extend(to_polyline2d(item, interpolated))
+        elif item['type'] == GeojSONTypes.POLYGON.value:
+            item = json.dumps(item)
+            if fill_polygon:
+                res.append(to_face3d(item))
+            else:
+                res.append(to_polygon2d(item))
+        elif item['type'] == GeojSONTypes.MULTIPOLYGON.value:
+            item = json.dumps(item)
+            if fill_polygon:
+                res.extend(to_face3d(item))
+            else:
+                res.extend(to_polygon2d(item))
+
+    return res
+
+def to_collection_3d(json_string: str, 
+    interpolated: Optional[bool]=False):
+    '''Ladybug Geometry 2D from GEOJSON GeometryCollection.
+    Mapping is
+    - POINT > Point3D 
+    - MULTIPOINT > List[Point3D]
+    - LINESTRING > LineSegment3D or Polyline3D
+    - MULTILINESTRING > List[LineSegment3D] or List[Polyline3D]
+    - POLYGON > Face3D
+    - MULTIPOLYGON > List[Face3D]
+    
+    Args:
+        json_string: GEOJSON geometry string to translate
+        interpolated: set it to true to create smooth polylines
+    '''
+    arr, schema_used = _get_geometry_collection(json_string, 
+        target=[GeojSONTypes.GEOMETRYCOLLECTION])
+    if not arr:
+        return
+    
+    res = []
+    for item in arr:
+        if item.get('type') == GeojSONTypes.POINT.value:
+            item = json.dumps(item)
+            res.append(to_point3d(item))
+        elif item['type'] == GeojSONTypes.MULTIPOINT.value:
+            item = json.dumps(item)
+            res.extend(to_point3d(item))
+        elif item['type'] == GeojSONTypes.LINESTRING.value:
+            item = json.dumps(item)
+            res.append(to_polyline3d(item, interpolated))
+        elif item['type'] == GeojSONTypes.MULTILINESTRING.value:
+            item = json.dumps(item)
+            res.extend(to_polyline3d(item, interpolated))
+        elif item['type'] == GeojSONTypes.POLYGON.value:
+            item = json.dumps(item)
+            res.append(to_face3d(item))
+        elif item['type'] == GeojSONTypes.MULTIPOLYGON.value:
+            item = json.dumps(item)
+            res.extend(to_face3d(item))
+
+    return res
 
 '''____________2D GEOMETRY TRANSLATORS____________'''
 
@@ -185,53 +293,77 @@ def to_mesh2d(json_string: str,
 
 '''____________3D GEOMETRY TRANSLATORS____________'''
 
-def to_vector3d(json_string: str) -> \
+def to_vector3d(json_string: str,
+        missing_coordinate: Optional[float]=0.0) -> \
         Union[Vector3D, List[Vector3D]]:
     '''Ladybug Vector2D from GEOJSON Point or MultiPoint.
         
     Args:
         json_string: GEOJSON geometry string to translate
     '''
+    def to_pt(arr):
+        out = arr[::]
+        if len(arr) == 2:
+            out.append(missing_coordinate)
+        return Vector3D.from_array(out)
+
     arr, schema_used = _get_coordinates(json_string,
         target=[GeojSONTypes.POINT, GeojSONTypes.MULTIPOINT])
     if not arr:
         return
     
     if schema_used == GeojSONTypes.POINT:
-        return Vector3D.from_array(arr)
+        return to_pt(arr)
     else:
-        return [Vector3D.from_array(_) for _ in arr]
+        return list(map(to_pt, arr))
 
 
-def to_point3d(json_string: str) -> \
+def to_point3d(json_string: str,
+        missing_coordinate: Optional[float]=0.0) -> \
         Union[Point3D, List[Point3D]]:
     '''Ladybug Point2D from GEOJSON Point or MultiPoint.
         
     Args:
         json_string: GEOJSON geometry string to translate
     '''
+    def to_pt(arr):
+        out = arr[::]
+        if len(arr) == 2:
+            out.append(missing_coordinate)
+        return Point3D.from_array(out)
+
     arr, schema_used = _get_coordinates(json_string,
         target=[GeojSONTypes.POINT, GeojSONTypes.MULTIPOINT])
     if not arr:
         return
 
     if schema_used == GeojSONTypes.POINT:
-        return Point3D.from_array(arr)
+        return to_pt(arr)
     else:
-        return [Point3D.from_array(_) for _ in arr]
+        return list(map(to_pt, arr))
 
 
-def to_linesegment3d(json_string: str) -> \
+def to_linesegment3d(json_string: str,
+        missing_coordinate: Optional[float]=0.0) -> \
         Union[LineSegment3D, List[LineSegment3D]]:
     '''Ladybug LineSegment3D from GEOJSON LineString or MultiLineString.
     
     Args:
         json_string: GEOJSON geometry string to translate
     '''
+    def fix_list(arr):
+        out = arr[::]
+        if len(arr) == 2:
+            out.append(missing_coordinate)
+        return out
+
     def get_line(arr):
         res = arr
         if len(arr) > 2:
             res = arr[::len(arr)-1]
+
+        res = list(map(fix_list, res))
+
         return LineSegment3D.from_array(res)
     
     arr, schema_used = _get_coordinates(json_string,
@@ -247,7 +379,8 @@ def to_linesegment3d(json_string: str) -> \
 
 
 def to_polyline3d(json_string: str, 
-    interpolated: Optional[bool]=False) -> \
+    interpolated: Optional[bool]=False,
+    missing_coordinate: Optional[float]=0.0) -> \
         Union[Polyline3D, LineSegment3D,
         List[Polyline3D], List[LineSegment3D]]:
     '''Ladybug Polyline3D from GEOJSON LineString.
@@ -257,7 +390,14 @@ def to_polyline3d(json_string: str,
         json_string: GEOJSON geometry string to translate
         interpolated: set it to true to create smooth polylines
     '''
+    def fix_list(arr):
+        out = arr[::]
+        if len(arr) == 2:
+            out.append(missing_coordinate)
+        return out
+
     def get_line_or_polyline(arr):
+        arr = list(map(fix_list, arr))
         if len(arr) == 2:
             return LineSegment3D.from_array(arr)
         

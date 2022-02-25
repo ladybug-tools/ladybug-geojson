@@ -142,3 +142,40 @@ def test_json_polygon_validation():
 
     validator = _Validator(invalid, [GeojSONTypes.MULTIPOLYGON])
     assert validator.selection != GeojSONTypes.MULTIPOLYGON
+
+def test_json_multi_validation():
+    valid = ''' {
+    "type": "GeometryCollection",
+    "geometries": [{
+        "type": "Point",
+        "coordinates": [100.0, 0.0]
+    }, {
+        "type": "LineString",
+        "coordinates": [
+        [101.0, 0.0],
+        [102.0, 1.0]
+        ]
+    }]
+    }
+    '''
+    
+    invalid = ''' {
+    "type": "GeometryCollection",
+    "geometries": [{
+        "type": "Point",
+        "coordinates": [100.0]
+    }, {
+        "type": "LineString",
+        "coordinates": [
+        [101.0, 0.0],
+        [102.0, 1.0]
+        ]
+    }]
+    }
+    '''
+    
+    validator = _Validator(valid, [GeojSONTypes.GEOMETRYCOLLECTION])
+    assert validator.selection == GeojSONTypes.GEOMETRYCOLLECTION
+
+    validator = _Validator(invalid, [GeojSONTypes.GEOMETRYCOLLECTION])
+    assert validator.selection != GeojSONTypes.GEOMETRYCOLLECTION

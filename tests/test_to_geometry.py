@@ -15,7 +15,9 @@ from ladybug_geojson.to_geometry import (
     to_polyline3d,
     to_polygon2d,
     to_face3d,
-    to_mesh3d )
+    to_mesh3d,
+    to_collection_2d,
+    to_collection_3d )
 
 try:
     from ladybug_geometry.geometry2d.pointvector import Vector2D, Point2D
@@ -449,3 +451,123 @@ def test_geojson_to_mesh():
     mesh = to_mesh2d(valid_2d)
     assert mesh is not None
     assert type(mesh) == list
+
+def test_geojson_to_collection():
+    valid_2d = ''' {
+    "type": "GeometryCollection",
+    "geometries": [{
+        "type": "Point",
+        "coordinates": [100.0, 0.0]
+    }, {
+        "type": "LineString",
+        "coordinates": [
+        [101.0, 0.0],
+        [102.0, 1.0]
+        ]
+    },
+    {
+        "type": "MultiPolygon", 
+        "coordinates": [
+            [
+                [[40, 40], [20, 45], [45, 30], [40, 40]]
+            ], 
+            [
+                [[20, 35], [10, 30], [10, 10], [30, 5], [45, 20], [20, 35]], 
+                [[30, 20], [20, 15], [20, 25], [30, 20]]
+            ]
+        ]
+    }]
+    }
+    '''
+
+    holes = [[
+        Point3D(30, 20, 0),
+        Point3D(20, 15, 0),
+        Point3D(20, 25, 0)
+    ]]
+
+    first_boundary = [
+        Point3D(40, 40, 0),
+        Point3D(20, 45, 0),
+        Point3D(45, 30, 0)
+    ]
+
+    second_boundary = [
+        Point3D(20, 35, 0),
+        Point3D(10, 30, 0),
+        Point3D(10, 10, 0),
+        Point3D(30, 5, 0),
+        Point3D(45, 20, 0)
+    ]
+
+
+    coll = to_collection_2d(valid_2d,
+        fill_polygon=True)
+    assert coll is not None
+    assert type(coll) == list
+    assert coll == [
+        Point2D(100.0, 0.0),
+        LineSegment2D \
+        .from_end_points(Point2D(101.0, 0.0),
+        Point2D(102.0, 1.0)),
+        Face3D(boundary=first_boundary),
+        Face3D(boundary=second_boundary, 
+        holes=holes)
+    ]
+
+
+    valid_3d = ''' {
+    "type": "GeometryCollection",
+    "geometries": [{
+        "type": "Point",
+        "coordinates": [100.0, 0.0, 1.0]
+    }, {
+        "type": "LineString",
+        "coordinates": [
+        [101.0, 0.0, 2.0],
+        [102.0, 1.0, 4.0]
+        ]
+    },
+    {
+        "type": "MultiPolygon", 
+        "coordinates": [
+            [
+                [[40, 40], [20, 45], [45, 30], [40, 40]]
+            ], 
+            [
+                [[20, 35], [10, 30], [10, 10], [30, 5], [45, 20], [20, 35]], 
+                [[30, 20], [20, 15], [20, 25], [30, 20]]
+            ]
+        ]
+    }]
+    }
+    '''
+
+    coll = to_collection_3d(valid_3d,
+        interpolated=True)
+    assert coll is not None
+    assert type(coll) == list
+    assert coll == [
+        Point3D(100.0, 0.0, 1.0),
+        LineSegment3D \
+        .from_end_points(Point3D(101.0, 0.0, 2.0),
+        Point3D(102.0, 1.0, 4.0)),
+        Face3D(boundary=first_boundary),
+        Face3D(boundary=second_boundary, 
+        holes=holes)
+    ]
+
+    # force 3D even if 2D
+    coll = to_collection_3d(valid_2d,
+        interpolated=True)
+    assert coll is not None
+    assert type(coll) == list
+    assert coll == [
+        Point3D(100.0, 0.0, 0.0),
+        LineSegment3D \
+        .from_end_points(Point3D(101.0, 0.0, 0.0),
+        Point3D(102.0, 1.0, 0.0)),
+        Face3D(boundary=first_boundary),
+        Face3D(boundary=second_boundary, 
+        holes=holes)
+    ]
