@@ -3,10 +3,12 @@ import json
 from ._validator import ( _Validator,
     GeojSONTypes)
 
-from ._geometry_util import ( _add_z_coordinate, 
+from ._geometry_helper import ( _add_z_coordinate, 
     _get_line_2d,
     _get_line_3d, 
-    _get_line_or_polyline_2d )
+    _get_line_or_polyline_2d,
+    _get_line_or_polyline_3d,
+    _to_polygon_2d, _to_face )
 
 from typing import List, Optional, Union
 try:
@@ -238,20 +240,6 @@ def to_polygon2d(json_string: str) -> \
     Args:
         json_string: GEOJSON geometry string to translate
     '''
-    def to_pt(arr):
-        return Point2D.from_array(arr)
-    
-    def to_pol(arr):
-        boundary = arr[0][:-1]
-        if len(arr) == 1:
-            return Polygon2D.from_array(boundary)
-        
-        boundary = list(map(to_pt, boundary))
-        holes = [list(map(to_pt, 
-            _[:-1])) for _ in arr[1:]]
-        return Polygon2D.from_shape_with_holes(boundary, 
-            holes)
-
     arr, schema_used = _get_coordinates(json_string,
         target=[GeojSONTypes.POLYGON, 
             GeojSONTypes.MULTIPOLYGON])
@@ -259,9 +247,9 @@ def to_polygon2d(json_string: str) -> \
         return
 
     if schema_used == GeojSONTypes.POLYGON:
-        return to_pol(arr)
+        return _to_polygon_2d(arr)
     else:
-        return list(map(to_pol, arr))
+        return list(map(_to_polygon_2d, arr))
     
 
 def to_mesh2d(json_string: str,
@@ -364,23 +352,6 @@ def to_polyline3d(json_string: str,
         json_string: GEOJSON geometry string to translate
         interpolated: set it to true to create smooth polylines
     '''
-    def fix_list(arr):
-        out = arr[::]
-        if len(arr) == 2:
-            out.append(missing_coordinate)
-        return out
-
-    def get_line_or_polyline(arr):
-        arr = list(map(fix_list, arr))
-        if len(arr) == 2:
-            return LineSegment3D.from_array(arr)
-        
-        pol = Polyline3D.from_array(arr)
-        if interpolated:
-            pol = Polyline3D(pol.vertices, interpolated)
-        
-        return pol
-
     arr, schema_used = _get_coordinates(json_string,
         target=[GeojSONTypes.LINESTRING, 
             GeojSONTypes.MULTILINESTRING])
@@ -388,9 +359,15 @@ def to_polyline3d(json_string: str,
         return
 
     if schema_used == GeojSONTypes.LINESTRING:
-        return get_line_or_polyline(arr)
+        return _get_line_or_polyline_3d(arr, 
+            interpolated=interpolated, 
+            z=missing_coordinate)
     else:
-        return list(map(get_line_or_polyline, arr))
+        return list(map(lambda _ : _get_line_or_polyline_3d(
+            _, interpolated=interpolated, 
+            z=missing_coordinate
+        ), 
+        arr))
 
 
 def to_face3d(json_string: str,
@@ -406,25 +383,6 @@ def to_face3d(json_string: str,
         try_merge: try to create polyface from list of faces, only if MultiPolygon.
         tolerance: number to use as tolerance for the polyface operatation.
     '''
-    def to_pt(arr):
-        out = arr[::]
-        if len(arr) == 2:
-            out.append(missing_coordinate)
-        return Point3D.from_array(out)
-    
-    def to_face(arr):
-        boundary = arr[0][:-1]
-        boundary = list(map(to_pt, boundary))
-
-        if len(arr) == 1:
-            return Face3D(boundary=boundary)
-        
-        holes = [list(map(to_pt, 
-            _[:-1])) for _ in arr[1:]]
-        
-        return Face3D(boundary=boundary, 
-            holes=holes)
-
     arr, schema_used = _get_coordinates(json_string,
         target=[GeojSONTypes.POLYGON, 
             GeojSONTypes.MULTIPOLYGON])
@@ -432,9 +390,11 @@ def to_face3d(json_string: str,
         return
 
     if schema_used == GeojSONTypes.POLYGON:
-        return to_face(arr)
+        return _to_face(arr, missing_coordinate)
     
-    faces = list(map(to_face, arr))
+    faces = list(map(lambda _: 
+        _to_face(_, missing_coordinate), 
+        arr))
 
     # try merge
     if try_merge:
