@@ -179,3 +179,42 @@ def test_json_multi_validation():
 
     validator = _Validator(invalid, [GeojSONTypes.GEOMETRYCOLLECTION])
     assert validator.selection != GeojSONTypes.GEOMETRYCOLLECTION
+
+def test_json_feature_validation():
+    valid = '''{
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+           [11.1214686,46.0677385],[11.121466,46.0677511],[11.1213806,46.0681452],          
+           [11.1213548,46.0682642],[11.1213115,46.0684385],[11.1212897,46.0685261],
+           [11.1212678,46.0686443]
+        ]
+      },
+      "properties": {
+        "lanes": 1,
+        "name": "Via Rodolfo Belenzani"
+      }
+    }
+    '''
+    
+    invalid = ''' {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+           [11.1214686,46.0677385]
+        ]
+      },
+      "properties": {
+        "lanes": 1,
+        "name": "Via Rodolfo Belenzani"
+      }
+    }
+    '''
+    
+    validator = _Validator(valid, [GeojSONTypes.FEATURE])
+    assert validator.selection == GeojSONTypes.FEATURE
+
+    validator = _Validator(invalid, [GeojSONTypes.FEATURE])
+    assert validator.selection != GeojSONTypes.FEATURE

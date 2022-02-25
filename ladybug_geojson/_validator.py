@@ -16,6 +16,7 @@ class GeojSONTypes(Enum):
     MULTILINESTRING = 'MultiLineString'
     MULTIPOLYGON = 'MultiPolygon'
     GEOMETRYCOLLECTION = 'GeometryCollection'
+    FEATURE = 'Feature'
 
     @classmethod
     def has_value(cls, value):
