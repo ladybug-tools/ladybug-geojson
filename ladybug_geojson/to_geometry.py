@@ -60,8 +60,8 @@ def to_collection_2d(json_string: str,
     res = []
 
     # skip validation for childs
-    child_options = { **options.settings, 
-        **Options(validation=False).settings}
+    child_options = Options(validation=False)
+    child_options.copy_from_dict(options.settings)
 
     for item in arr:
         if item.get('type') == GeojSONTypes.POINT.value:
@@ -118,8 +118,8 @@ def to_collection_3d(json_string: str,
         return
 
     # skip validation for childs
-    child_options = { **options.settings, 
-        **Options(validation=False).settings}
+    child_options = Options(validation=False)
+    child_options.copy_from_dict(options.settings)
     
     res = []
     for item in arr:

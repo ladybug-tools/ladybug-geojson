@@ -15,6 +15,7 @@ class RFC7946(Enum):
     PROPERTIES = 'properties'
     GEOMETRY = 'geometry'
     TYPE = 'type'
+    FEATURES = 'features'
 
 def _get_data_from_json(json_string: str,
     keyword: RFC7946,
@@ -102,6 +103,10 @@ class Options:
         keyword: str,
         value: Any):
         self._settings[keyword] = value
+    
+    def copy_from_dict(self, 
+        other:dict):
+        self._settings = {**other, **self._settings}
     
     @property
     def settings(self):

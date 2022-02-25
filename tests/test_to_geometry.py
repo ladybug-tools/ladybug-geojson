@@ -69,6 +69,10 @@ def test_geojson_to_vector():
         Vector2D(30, 10)
     ]
 
+    invalid_2d = '{"type": "Point","coordinates": [125.6]}'
+    vec_2d = to_vector2d(invalid_2d)
+    assert vec_2d is None
+
 def test_geojson_to_point():
     valid_2d = '{"type": "Point","coordinates": [125.6, 10.1]}'
     valid_3d = '{"type": "Point","coordinates": [125.6, 10.1, 10.5]}'
@@ -162,6 +166,16 @@ def test_geojson_to_linesegment():
         LineSegment2D \
         .from_end_points(Point2D(40, 40),
         Point2D(30, 10))]
+
+    invalid_2d = '''{
+        "type": "LineString", 
+        "coordinates": [
+            [11.1212678],[11.1212316,46.0688409]
+        ]
+    }'''
+
+    ln_2d = to_linesegment2d(invalid_2d)
+    assert ln_2d is None
 
 def test_geojson_to_polyline():
     valid_2d = '''{
@@ -323,6 +337,21 @@ def test_geojson_to_polygon():
         holes),
         ]
 
+    invalid_2d = '''{
+        "type": "MultiPolygon", 
+        "coordinates": [
+            [
+                [[40, 40]]
+            ], 
+            [
+                [[20, 35], [10, 30], [10, 10], [30, 5], [45, 20], [20, 35]], 
+                [[30, 20], [20, 15], [20, 25], [30, 20]]
+            ]
+        ]
+    }'''
+    pl_2d = to_polygon2d(invalid_2d)
+    assert pl_2d is None
+
 def test_geojson_to_face():
     valid_2d = '''{
         "type": "Polygon", 
@@ -409,6 +438,16 @@ def test_geojson_to_face():
         Face3D(boundary=second_boundary, 
         holes=holes),
         ], 0.001)
+
+    invalid_2d = '''{
+        "type": "Polygon", 
+        "coordinates": [
+            [[35, 10], [45, 45]]
+        ]
+    }'''
+
+    face = to_face3d(invalid_2d)
+    assert face is None
 
 def test_geojson_to_mesh():
     valid_2d = '''{

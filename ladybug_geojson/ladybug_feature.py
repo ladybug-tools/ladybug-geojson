@@ -51,6 +51,10 @@ class LadybugFeature:
         
         if not feature_schema:
             return
+
+        if not self._geometry:
+            self._properties = None
+            return
         
         self._properties = prop
 
@@ -66,14 +70,15 @@ class LadybugFeature:
         validation=validation)
         
         if not feature_schema:
+            self._geometry = None
             return
-
+        
         # get json schema
         geo_schema = GeojSONTypes(geo.get('type'))
 
         # skip validation
-        child_options = { **self._options.settings, 
-            **Options(validation=False).settings}
+        child_options = Options(validation=False)
+        child_options.copy_from_dict(self._options.settings)
 
         geo = json.dumps(geo)
         if geo_schema in [GeojSONTypes.POINT, 
@@ -98,3 +103,30 @@ class LadybugFeature:
     def properties(self):
         ''' Properties '''
         return self._properties
+
+    @classmethod
+    def from_featurecollection(cls, 
+        json_string: str,
+        options: Optional[Options]=Options.options_factory()):
+        # preparation
+        validation = options.get('validation')
+
+        # validate here
+        features, f_schema = _get_data_from_json(json_string, 
+        keyword=RFC7946.FEATURES,
+        target=[GeojSONTypes.FEATURE_COLLECTION],
+        validation=validation)   
+
+        if not f_schema:
+            return
+        
+        # skip validation
+        child_options = Options(validation=False)
+        child_options.copy_from_dict(options.settings)
+
+        fts = []
+        for ft in features:
+            d = json.dumps(ft)
+            fts.append(cls(d, child_options))
+        
+        return fts
