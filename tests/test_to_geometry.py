@@ -516,6 +516,35 @@ def test_geojson_to_collection():
     ]
 
 
+    invalid_2d = ''' {
+    "type": "GeometryCollection",
+    "geometries": [{
+        "type": "Point",
+        "coordinates": [100.0, 0.0]
+    }, {
+        "type": "LineString",
+        "coordinates": [
+        [102.0, 1.0]
+        ]
+    },
+    {
+        "type": "MultiPolygon", 
+        "coordinates": [
+            [
+                [[40, 40], [20, 45], [45, 30], [40, 40]]
+            ], 
+            [
+                [[20, 35], [10, 30], [10, 10], [30, 5], [45, 20], [20, 35]], 
+                [[30, 20], [20, 15], [20, 25], [30, 20]]
+            ]
+        ]
+    }]
+    }
+    '''
+    coll = to_collection_2d(invalid_2d,
+        fill_polygon=True)
+    assert coll is None
+
     valid_3d = ''' {
     "type": "GeometryCollection",
     "geometries": [{
