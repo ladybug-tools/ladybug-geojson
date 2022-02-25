@@ -18,7 +18,7 @@ from ladybug_geojson.to_geometry import (
     to_mesh3d,
     to_collection_2d,
     to_collection_3d )
-from ladybug_geojson._geojson_helper import Options
+from ladybug_geojson.geojson_helper import Options
 try:
     from ladybug_geometry.geometry2d.pointvector import Vector2D, Point2D
     from ladybug_geometry.geometry2d.ray import Ray2D

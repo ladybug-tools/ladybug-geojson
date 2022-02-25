@@ -5,7 +5,7 @@ from tkinter.tix import Tree
 from typing import Optional
 from ._validator import ( _Validator,
     GeojSONTypes )
-from ._geojson_helper import ( _get_data_from_json,
+from .geojson_helper import ( _get_data_from_json,
     RFC7946, Options )
 from .to_geometry import ( to_face3d, to_point3d, to_polyline3d )
 

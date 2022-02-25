@@ -8,7 +8,7 @@ from ._geometry_helper import ( _add_z_coordinate,
     _get_line_or_polyline_2d,
     _get_line_or_polyline_3d,
     _to_polygon_2d, _to_face )
-from ._geojson_helper import ( _get_data_from_json,
+from .geojson_helper import ( _get_data_from_json,
     RFC7946, Options)
 
 from typing import List, Optional, Union
@@ -43,10 +43,7 @@ def to_collection_2d(json_string: str,
     - MULTIPOLYGON > List[Polygon2D] or List[Face3D]
     
     Args:
-        json_string: GEOJSON geometry string to translate.
-        interpolated: set it to true to create smooth polylines.
-        fill_polygon: set it to true to create faces instead of polygon.
-        validation: DO NOT USE THIS INPUT if you want automatic validation.
+        options: Options object to use for settings
     '''
     # preparation
     mapping = [GeojSONTypes.GEOMETRYCOLLECTION]
