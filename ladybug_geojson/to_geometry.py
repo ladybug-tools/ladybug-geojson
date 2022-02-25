@@ -2,6 +2,12 @@
 import json
 from ._validator import ( _Validator,
     GeojSONTypes)
+
+from ._geometry_util import ( _add_z_coordinate, 
+    _get_line_2d,
+    _get_line_3d, 
+    _get_line_or_polyline_2d )
+
 from typing import List, Optional, Union
 try:
     from ladybug_geometry.geometry2d.pointvector import Vector2D, Point2D
@@ -187,12 +193,6 @@ def to_linesegment2d(json_string: str) -> \
     Args:
         json_string: GEOJSON geometry string to translate
     '''
-    def get_line(arr):
-        res = arr
-        if len(arr) > 2:
-            res = arr[::len(arr)-1]
-        return LineSegment2D.from_array(res)
-
     arr, schema_used = _get_coordinates(json_string,
         target=[GeojSONTypes.LINESTRING,
             GeojSONTypes.MULTILINESTRING])
@@ -200,9 +200,9 @@ def to_linesegment2d(json_string: str) -> \
         return
 
     if schema_used == GeojSONTypes.LINESTRING:
-        return get_line(arr)
+        return _get_line_2d(arr)
     else:
-        return list(map(get_line, arr))
+        return list(map(_get_line_2d, arr))
 
 
 def to_polyline2d(json_string: str, 
@@ -217,16 +217,6 @@ def to_polyline2d(json_string: str,
         json_string: GEOJSON geometry string to translate
         interpolated: set it to true to create smooth polylines
     '''
-    def get_line_or_polyline(arr):
-        if len(arr) == 2:
-            return LineSegment2D.from_array(arr)
-        
-        pol = Polyline2D.from_array(arr)
-        if interpolated:
-            pol = Polyline2D(pol.vertices, interpolated)
-        
-        return pol
-
     arr, schema_used = _get_coordinates(json_string,
         target=[GeojSONTypes.LINESTRING,
             GeojSONTypes.MULTILINESTRING])
@@ -234,9 +224,11 @@ def to_polyline2d(json_string: str,
         return
 
     if schema_used == GeojSONTypes.LINESTRING:
-        return get_line_or_polyline(arr)
+        return _get_line_or_polyline_2d(arr, 
+            interpolated=interpolated)
     else:
-        return list(map(get_line_or_polyline, arr))
+        return list(map(lambda _: _get_line_or_polyline_2d(_, 
+            interpolated=interpolated), arr))
 
 
 def to_polygon2d(json_string: str) -> \
@@ -301,21 +293,19 @@ def to_vector3d(json_string: str,
     Args:
         json_string: GEOJSON geometry string to translate
     '''
-    def to_pt(arr):
-        out = arr[::]
-        if len(arr) == 2:
-            out.append(missing_coordinate)
-        return Vector3D.from_array(out)
-
     arr, schema_used = _get_coordinates(json_string,
         target=[GeojSONTypes.POINT, GeojSONTypes.MULTIPOINT])
     if not arr:
         return
     
     if schema_used == GeojSONTypes.POINT:
-        return to_pt(arr)
+        return Vector3D.from_array(_add_z_coordinate(arr, 
+            missing_coordinate))
     else:
-        return list(map(to_pt, arr))
+        return list(map(lambda _: Vector3D.from_array(
+            _add_z_coordinate(_, 
+            missing_coordinate), 
+        arr)))
 
 
 def to_point3d(json_string: str,
@@ -326,21 +316,19 @@ def to_point3d(json_string: str,
     Args:
         json_string: GEOJSON geometry string to translate
     '''
-    def to_pt(arr):
-        out = arr[::]
-        if len(arr) == 2:
-            out.append(missing_coordinate)
-        return Point3D.from_array(out)
-
     arr, schema_used = _get_coordinates(json_string,
         target=[GeojSONTypes.POINT, GeojSONTypes.MULTIPOINT])
     if not arr:
         return
 
     if schema_used == GeojSONTypes.POINT:
-        return to_pt(arr)
+        return Point3D.from_array(_add_z_coordinate(arr, 
+            missing_coordinate))
     else:
-        return list(map(to_pt, arr))
+        return list(map(lambda _: Point3D.from_array(
+            _add_z_coordinate(_, 
+            missing_coordinate), 
+        arr)))
 
 
 def to_linesegment3d(json_string: str,
@@ -350,22 +338,7 @@ def to_linesegment3d(json_string: str,
     
     Args:
         json_string: GEOJSON geometry string to translate
-    '''
-    def fix_list(arr):
-        out = arr[::]
-        if len(arr) == 2:
-            out.append(missing_coordinate)
-        return out
-
-    def get_line(arr):
-        res = arr
-        if len(arr) > 2:
-            res = arr[::len(arr)-1]
-
-        res = list(map(fix_list, res))
-
-        return LineSegment3D.from_array(res)
-    
+    '''    
     arr, schema_used = _get_coordinates(json_string,
         target=[GeojSONTypes.LINESTRING, 
             GeojSONTypes.MULTILINESTRING])
@@ -373,9 +346,10 @@ def to_linesegment3d(json_string: str,
         return
 
     if schema_used == GeojSONTypes.LINESTRING:
-        return get_line(arr)
+        return _get_line_3d(arr, missing_coordinate)
     else:
-        return list(map(get_line, arr))
+        return list(map(lambda _: 
+            _get_line_3d(_, missing_coordinate), arr))
 
 
 def to_polyline3d(json_string: str, 
