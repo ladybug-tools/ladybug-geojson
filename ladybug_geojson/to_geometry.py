@@ -1,7 +1,6 @@
 # coding=utf-8
 '''Functions to create Ladybug geometries from GEOJSON geometry strings.'''
 import json
-from wsgiref import validate
 from ._validator import GeojSONTypes
 from ._geometry_helper import ( _add_z_coordinate, 
     _get_line_2d,

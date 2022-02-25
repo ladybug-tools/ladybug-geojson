@@ -1,8 +1,7 @@
 # coding=utf-8
 ''' Ladybug Feature class'''
-from pickle import LIST
-from tkinter.tix import Tree
-from typing import Optional
+import json
+from typing import List, Optional
 from ._validator import ( _Validator,
     GeojSONTypes )
 from .geojson_helper import ( _get_data_from_json,
@@ -26,62 +25,76 @@ class LadybugFeature:
         validation: set it to true to skip GeoJSON validation.
     Properties:
         * geometry
-        * property
+        * properties
     '''
     __slots__ = ('_geometry', 
-        '_property')
+        '_properties', '_options')
 
     def __init__(self, 
         json_string: str,
-        options: Optional[Options]=Options.options_factory):
+        options: Optional[Options]=Options.options_factory()):
 
         # preparation
         self._options = options
-        mapping = [GeojSONTypes.FEATURE]
-
         # geometry set
-        validation = self._options.get('validation')
-        self._init_geometry(json_string, 
-            validation, 
-            mapping)
+        self._set_geometry(json_string)
+        # property set
+        self._set_properties(json_string)
 
-        # property set - skip validation
-        prop, schema_used = _get_data_from_json(json_string, 
+    def _set_properties(self,
+        json_string: str):
+        prop, feature_schema = _get_data_from_json(json_string, 
             keyword=RFC7946.PROPERTIES,
-            target=mapping,
-            validation=True)
+            target=[GeojSONTypes.FEATURE],
+            validation=False,
+            shallow_validation=RFC7946.PROPERTIES)
+        
+        if not feature_schema:
+            return
+        
+        self._properties = prop
 
-    def _init_geometry(self, 
-        json_string: str, 
-        validation: bool, 
-        mapping: LIST[GeojSONTypes]):
+    def _set_geometry(self, 
+        json_string: str):
+        # preparation
+        validation = self._options.get('validation')
 
-        # validate just one
-        geo, geo_schema = _get_data_from_json(json_string, 
+        # validate here
+        geo, feature_schema = _get_data_from_json(json_string, 
         keyword=RFC7946.GEOMETRY,
-        target=mapping,
+        target=[GeojSONTypes.FEATURE],
         validation=validation)
         
-        if not geo_schema:
+        if not feature_schema:
             return
 
-        # preparation
+        # get json schema
+        geo_schema = GeojSONTypes(geo.get('type'))
 
-        
+        # skip validation
+        child_options = { **self._options.settings, 
+            **Options(validation=False).settings}
+
+        geo = json.dumps(geo)
         if geo_schema in [GeojSONTypes.POINT, 
             GeojSONTypes.MULTIPOINT]:
             self._geometry = to_point3d(geo,
-                validation=True)
+                child_options)
         elif geo_schema in [GeojSONTypes.LINESTRING, 
             GeojSONTypes.MULTILINESTRING]:
             self._geometry = to_polyline3d(geo,
-                validation=True)
+                child_options)
         elif geo_schema in [GeojSONTypes.POLYGON, 
             GeojSONTypes.MULTIPOLYGON]:
             self._geometry = to_face3d(geo,
-                validation=True)
+                child_options)
 
     @property
     def geometry(self):
         ''' Geometry '''
         return self._geometry
+
+    @property
+    def properties(self):
+        ''' Properties '''
+        return self._properties

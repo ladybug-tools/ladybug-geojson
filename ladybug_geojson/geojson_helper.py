@@ -14,14 +14,28 @@ class RFC7946(Enum):
     GEOMETRY_COLLECTION = 'geometries'
     PROPERTIES = 'properties'
     GEOMETRY = 'geometry'
+    TYPE = 'type'
 
 def _get_data_from_json(json_string: str,
     keyword: RFC7946,
     target: List[GeojSONTypes],
-    validation: Optional[bool]=True):
+    validation: Optional[bool]=True,
+    shallow_validation: Optional[RFC7946]=RFC7946.TYPE):
+    '''Function to validate data and extract data by keyword.
+    
+    Args:
+        json_string: JSON string to use for validation and query.
+        keyword: RFC7946 keyword to use for data query (data to extract).
+        target: list of schema used for validation.
+        validation: enable or disable the validation. If disabled it check 
+            using shallow_validation
+        shallow_validation: fast validation using just a keyword.
+            if TYPE it returns GeojSONTypes
+            if PROPERTIES it returns property keyword itself
+    '''
 
     sel = None
-    # complete validation with GeoJSON schema
+    # complete and slow validation with GeoJSON schema
     if validation:
         validator = _Validator(json=json_string, 
             target=target)
@@ -31,11 +45,13 @@ def _get_data_from_json(json_string: str,
 
     obj = json.loads(json_string)
 
-    # get just the type as fast validation
+    # fast validation
     if not validation:
-        try:
-            sel = GeojSONTypes(obj.get('type'))
-        except:
+        if shallow_validation == RFC7946.TYPE:
+            sel = GeojSONTypes(obj.get(RFC7946.TYPE.value))
+        elif shallow_validation == RFC7946.PROPERTIES:
+            sel = RFC7946.PROPERTIES
+        else:
             return None, None
 
     arr = obj.get(keyword.value)

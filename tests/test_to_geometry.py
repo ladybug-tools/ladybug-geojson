@@ -1,5 +1,4 @@
 # coding=utf-8
-from typing import List
 import pytest
 
 import json
