@@ -1,6 +1,7 @@
 # coding=utf-8
 '''Functions to create Ladybug geometries from GEOJSON geometry strings.'''
 import json
+from wsgiref import validate
 from ._validator import GeojSONTypes
 from ._geometry_helper import ( _add_z_coordinate, 
     _get_line_2d,
@@ -32,7 +33,7 @@ except ImportError as e:
 '''____________COLLECTION GEOMETRY TRANSLATORS____________'''
 
 def to_collection_2d(json_string: str, 
-    options: Optional[Options]=Options.options_factory):
+    options: Optional[Options]=Options.options_factory()):
     '''Ladybug Geometry 2D from GEOJSON GeometryCollection.
     Mapping is
     - POINT > Point2D 
@@ -43,12 +44,11 @@ def to_collection_2d(json_string: str,
     - MULTIPOLYGON > List[Polygon2D] or List[Face3D]
     
     Args:
-        options: Options object to use for settings
+        options: Options object to use for mapping.
     '''
     # preparation
     mapping = [GeojSONTypes.GEOMETRYCOLLECTION]
     validation = options.get('validation')
-    interpolated = options.get('interpolated')
     fill_polygon = options.get('fill_polygon')
 
     arr, schema_used = _get_data_from_json(json_string, 
@@ -59,43 +59,41 @@ def to_collection_2d(json_string: str,
         return
     
     res = []
+
+    # skip validation for childs
+    child_options = { **options.settings, 
+        **Options(validation=False).settings}
+
     for item in arr:
         if item.get('type') == GeojSONTypes.POINT.value:
             item = json.dumps(item)
-            res.append(to_point2d(item, validation=False))
+            res.append(to_point2d(item, child_options))
         elif item.get('type') == GeojSONTypes.MULTIPOINT.value:
             item = json.dumps(item)
-            res.extend(to_point2d(item, validation=False))
+            res.extend(to_point2d(item, child_options))
         elif item.get('type') == GeojSONTypes.LINESTRING.value:
             item = json.dumps(item)
-            res.append(to_polyline2d(item, interpolated, 
-                validation=False))
+            res.append(to_polyline2d(item, child_options))
         elif item.get('type') == GeojSONTypes.MULTILINESTRING.value:
             item = json.dumps(item)
-            res.extend(to_polyline2d(item, interpolated, 
-                validation=False))
+            res.extend(to_polyline2d(item, child_options))
         elif item.get('type') == GeojSONTypes.POLYGON.value:
             item = json.dumps(item)
             if fill_polygon:
-                res.append(to_face3d(item, 
-                    validation=False))
+                res.append(to_face3d(item, child_options))
             else:
-                res.append(to_polygon2d(item, 
-                    validation=False))
+                res.append(to_polygon2d(item, options))
         elif item.get('type') == GeojSONTypes.MULTIPOLYGON.value:
             item = json.dumps(item)
             if fill_polygon:
-                res.extend(to_face3d(item,
-                validation=False))
+                res.extend(to_face3d(item, child_options))
             else:
-                res.extend(to_polygon2d(item,
-                validation=False))
+                res.extend(to_polygon2d(item, child_options))
 
     return res
 
 def to_collection_3d(json_string: str, 
-    interpolated: Optional[bool]=False,
-    validation: Optional[bool]=False):
+    options: Optional[Options]=Options.options_factory()):
     '''Ladybug Geometry 3D from GEOJSON GeometryCollection.
     Mapping is
     - POINT > Point3D 
@@ -107,10 +105,11 @@ def to_collection_3d(json_string: str,
     
     Args:
         json_string: GEOJSON geometry string to translate.
-        interpolated: set it to true to create smooth polylines.
-        validation: DO NOT USE THIS INPUT if you want automatic validation.
+        options: Options object to use for mapping.
     '''
+    # preparation
     mapping = [GeojSONTypes.GEOMETRYCOLLECTION]
+    validation = options.get('validation')
 
     arr, schema_used = _get_data_from_json(json_string, 
         keyword=RFC7946.GEOMETRY_COLLECTION,
@@ -118,44 +117,48 @@ def to_collection_3d(json_string: str,
         validation=validation)
     if not arr:
         return
+
+    # skip validation for childs
+    child_options = { **options.settings, 
+        **Options(validation=False).settings}
     
     res = []
     for item in arr:
         if item.get('type') == GeojSONTypes.POINT.value:
             item = json.dumps(item)
-            res.append(to_point3d(item, validation=True))
+            res.append(to_point3d(item, child_options))
         elif item.get('type') == GeojSONTypes.MULTIPOINT.value:
             item = json.dumps(item)
-            res.extend(to_point3d(item, validation=True))
+            res.extend(to_point3d(item, child_options))
         elif item.get('type') == GeojSONTypes.LINESTRING.value:
             item = json.dumps(item)
-            res.append(to_polyline3d(item, interpolated,
-            validation=True))
+            res.append(to_polyline3d(item, child_options))
         elif item.get('type') == GeojSONTypes.MULTILINESTRING.value:
             item = json.dumps(item)
-            res.extend(to_polyline3d(item, interpolated, 
-            validation=True))
+            res.extend(to_polyline3d(item, child_options))
         elif item.get('type') == GeojSONTypes.POLYGON.value:
             item = json.dumps(item)
-            res.append(to_face3d(item, validation=True))
+            res.append(to_face3d(item, child_options))
         elif item.get('type') == GeojSONTypes.MULTIPOLYGON.value:
             item = json.dumps(item)
-            res.extend(to_face3d(item, validation=True))
+            res.extend(to_face3d(item, child_options))
 
     return res
 
 '''____________2D GEOMETRY TRANSLATORS____________'''
 
 def to_vector2d(json_string: str,
-        validation: Optional[bool]=False) -> \
+        options: Optional[Options]=Options.options_factory()) -> \
         Union[Vector2D, List[Vector2D]]:
     '''Ladybug Vector2D from GEOJSON Point or Multipoint.
         
     Args:
         json_string: GEOJSON geometry string to translate
-        validation: DO NOT USE THIS INPUT if you want automatic validation.
+        options: Options object to use for mapping.
     '''
+    # preparation
     mapping = [GeojSONTypes.POINT, GeojSONTypes.MULTIPOINT]
+    validation = options.get('validation')
 
     arr, schema_used = _get_data_from_json(json_string, 
         keyword=RFC7946.COORDINATES,
@@ -171,15 +174,17 @@ def to_vector2d(json_string: str,
 
 
 def to_point2d(json_string: str,
-        validation: Optional[bool]=False) -> \
+        options: Optional[Options]=Options.options_factory()) -> \
         Union[Point2D, List[Point2D]]:
     '''Ladybug Point2D from GEOJSON Point or Multipoint.
         
     Args:
         json_string: GEOJSON geometry string to translate
-        validation: DO NOT USE THIS INPUT if you want automatic validation.
+        options: Options object to use for mapping.
     '''
+    # preparation
     mapping = [GeojSONTypes.POINT, GeojSONTypes.MULTIPOINT]
+    validation = options.get('validation')
 
     arr, schema_used = _get_data_from_json(json_string,
         keyword=RFC7946.COORDINATES,
@@ -195,7 +200,7 @@ def to_point2d(json_string: str,
 
 
 def to_linesegment2d(json_string: str,
-        validation: Optional[bool]=False) -> \
+        options: Optional[Options]=Options.options_factory()) -> \
         Union[LineSegment2D, List[LineSegment2D]]:
     '''Ladybug LineSegment2D from GEOJSON LineString or MultiLineString.
     
@@ -203,8 +208,10 @@ def to_linesegment2d(json_string: str,
         json_string: GEOJSON geometry string to translate.
         validation: DO NOT USE THIS INPUT if you want automatic validation.
     '''
+    # preparation
     mapping = [GeojSONTypes.LINESTRING,
             GeojSONTypes.MULTILINESTRING]
+    validation = options.get('validation')
 
     arr, schema_used = _get_data_from_json(json_string,
         keyword=RFC7946.COORDINATES,
@@ -220,8 +227,7 @@ def to_linesegment2d(json_string: str,
 
 
 def to_polyline2d(json_string: str, 
-    interpolated: Optional[bool]=False,
-    validation: Optional[bool]=False) -> \
+    options: Optional[Options]=Options.options_factory()) -> \
         Union[Polyline2D, LineSegment2D,
         List[Polyline2D], List[LineSegment2D]]:
     '''Ladybug Polyline2D from a GEOJSON LineString or MultiLineString.
@@ -233,8 +239,11 @@ def to_polyline2d(json_string: str,
         interpolated: set it to true to create smooth polylines.
         validation: DO NOT USE THIS INPUT if you want automatic validation.
     '''
+    # preparation
     mapping = [GeojSONTypes.LINESTRING,
             GeojSONTypes.MULTILINESTRING]
+    validation = options.get('validation')
+    interpolated = options.get('interpolated')
 
     arr, schema_used = _get_data_from_json(json_string,
         keyword=RFC7946.COORDINATES,
@@ -252,7 +261,7 @@ def to_polyline2d(json_string: str,
 
 
 def to_polygon2d(json_string: str,
-        validation: Optional[bool]=False) -> \
+        options: Optional[Options]=Options.options_factory()) -> \
         Union[Polygon2D, List[Polygon2D]]:
     '''Ladybug Polygon2D from a GEOJSON Polygon.
 
@@ -260,8 +269,10 @@ def to_polygon2d(json_string: str,
         json_string: GEOJSON geometry string to translate.
         validation: DO NOT USE THIS INPUT if you want automatic validation.
     '''
+    # preparation
     mapping = [GeojSONTypes.POLYGON, 
             GeojSONTypes.MULTIPOLYGON]
+    validation = options.get('validation')
 
     arr, schema_used = _get_data_from_json(json_string,
         keyword=RFC7946.COORDINATES,
@@ -277,7 +288,7 @@ def to_polygon2d(json_string: str,
     
 
 def to_mesh2d(json_string: str,
-    validation: Optional[bool]=False) -> \
+    options: Optional[Options]=Options.options_factory()) -> \
         Union[Mesh2D, List[Mesh2D]]:
     '''Ladybug Mesh2D from a GEOJSON Polygon or MultiPolygon.
 
@@ -286,8 +297,7 @@ def to_mesh2d(json_string: str,
         validation: DO NOT USE THIS INPUT if you want automatic validation.
     '''
     face = to_face3d(json_string=json_string,
-        z=0.0,
-        validation=validation)
+        options=options)
     
     if not face:
         return
@@ -300,8 +310,7 @@ def to_mesh2d(json_string: str,
 '''____________3D GEOMETRY TRANSLATORS____________'''
 
 def to_vector3d(json_string: str,
-        z: Optional[float]=0.0,
-        validation: Optional[bool]=False) -> \
+        options: Optional[Options]=Options.options_factory()) -> \
         Union[Vector3D, List[Vector3D]]:
     '''Ladybug Vector2D from GEOJSON Point or MultiPoint.
         
@@ -310,7 +319,10 @@ def to_vector3d(json_string: str,
         z: it is used if z is missing.
         validation: DO NOT USE THIS INPUT if you want automatic validation.
     '''
+    # preparation
     mapping = [GeojSONTypes.POINT, GeojSONTypes.MULTIPOINT]
+    z = options.get('z')
+    validation = options.get('validation')
 
     arr, schema_used = _get_data_from_json(json_string,
         keyword=RFC7946.COORDINATES,
@@ -330,8 +342,7 @@ def to_vector3d(json_string: str,
 
 
 def to_point3d(json_string: str,
-        z: Optional[float]=0.0,
-        validation: Optional[bool]=False) -> \
+        options: Optional[Options]=Options.options_factory()) -> \
         Union[Point3D, List[Point3D]]:
     '''Ladybug Point2D from GEOJSON Point or MultiPoint.
         
@@ -340,7 +351,10 @@ def to_point3d(json_string: str,
         z: it is used if z is missing.
         validation: DO NOT USE THIS INPUT if you want automatic validation.
     '''
+    # preparation
     mapping = [GeojSONTypes.POINT, GeojSONTypes.MULTIPOINT]
+    z = options.get('z')
+    validation = options.get('validation')
 
     arr, schema_used = _get_data_from_json(json_string,
         keyword=RFC7946.COORDINATES,
@@ -360,8 +374,7 @@ def to_point3d(json_string: str,
 
 
 def to_linesegment3d(json_string: str,
-        z: Optional[float]=0.0,
-        validation: Optional[bool]=False) -> \
+        options: Optional[Options]=Options.options_factory()) -> \
         Union[LineSegment3D, List[LineSegment3D]]:
     '''Ladybug LineSegment3D from GEOJSON LineString or MultiLineString.
     
@@ -370,8 +383,11 @@ def to_linesegment3d(json_string: str,
         z: it is used if z is missing.
         validation: DO NOT USE THIS INPUT if you want automatic validation.
     '''    
+    # preparation
     mapping = [GeojSONTypes.LINESTRING, 
             GeojSONTypes.MULTILINESTRING]
+    z = options.get('z')
+    validation = options.get('validation')
 
     arr, schema_used = _get_data_from_json(json_string,
         keyword=RFC7946.COORDINATES,
@@ -388,9 +404,7 @@ def to_linesegment3d(json_string: str,
 
 
 def to_polyline3d(json_string: str, 
-    interpolated: Optional[bool]=False,
-    z: Optional[float]=0.0,
-    validation: Optional[bool]=False) -> \
+    options: Optional[Options]=Options.options_factory()) -> \
         Union[Polyline3D, LineSegment3D,
         List[Polyline3D], List[LineSegment3D]]:
     '''Ladybug Polyline3D from GEOJSON LineString.
@@ -402,8 +416,12 @@ def to_polyline3d(json_string: str,
         z: it is used if z is missing.
         validation: DO NOT USE THIS INPUT if you want automatic validation.
     '''
+    # preparation
     mapping = [GeojSONTypes.LINESTRING, 
             GeojSONTypes.MULTILINESTRING]
+    validation = options.get('validation')
+    interpolated = options.get('interpolated')
+    z = options.get('z')
 
     arr, schema_used = _get_data_from_json(json_string,
         keyword=RFC7946.COORDINATES,
@@ -425,10 +443,7 @@ def to_polyline3d(json_string: str,
 
 
 def to_face3d(json_string: str,
-    z: Optional[float]=0.0,
-    try_merge: Optional[bool]=False,
-    tolerance: Optional[bool]=0.001,
-    validation: Optional[bool]=False) -> \
+    options: Optional[Options]=Options.options_factory()) -> \
         Union[Face3D, List[Face3D]]:
     '''Ladybug Face3D or Polyface3D from a GEOJSON Polygon or MultiPolygon.
 
@@ -439,8 +454,13 @@ def to_face3d(json_string: str,
         tolerance: number to use as tolerance for the polyface operatation.
         validation: DO NOT USE THIS INPUT if you want automatic validation.
     '''
+    # preparation
     mapping = [GeojSONTypes.POLYGON, 
             GeojSONTypes.MULTIPOLYGON]
+    validation = options.get('validation')
+    merge_faces = options.get('merge_faces')
+    tolerance = options.get('tolerance')
+    z = options.get('z')
 
     arr, schema_used = _get_data_from_json(json_string,
         keyword=RFC7946.COORDINATES,
@@ -457,7 +477,7 @@ def to_face3d(json_string: str,
         arr))
 
     # try merge
-    if try_merge:
+    if merge_faces:
         try:
             faces = Polyface3D.from_faces(faces, tolerance)
         except:
@@ -466,8 +486,7 @@ def to_face3d(json_string: str,
     
 
 def to_mesh3d(json_string: str,
-    z: Optional[float]=0.0,
-    validation: Optional[bool]=False) -> Mesh2D:
+    options: Optional[Options]=Options.options_factory()) -> Mesh2D:
     '''Ladybug Mesh3D from a GEOJSON Polygon or MultiPolygon.
 
     Args:
@@ -475,8 +494,7 @@ def to_mesh3d(json_string: str,
         validation: DO NOT USE THIS INPUT if you want automatic validation.
     '''
     face = to_face3d(json_string=json_string,
-        z=z,
-        validation=validation)
+        options=options)
     
     if not face:
         return

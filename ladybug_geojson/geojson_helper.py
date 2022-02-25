@@ -4,7 +4,7 @@ import json
 from enum import ( Enum, unique )
 from ._validator import ( _Validator,
     GeojSONTypes)
-from typing import List, Optional, Union
+from typing import Any, List, Optional, Union
 
 '''____________RFC 7946 KEYWORDS____________'''
 
@@ -59,19 +59,19 @@ class Options:
     __slots__ = ('_settings')
 
     def __init__(self,
-        z: Optional[float]=0.0, 
-        interpolated: Optional[bool]=False, 
-        merge_faces: Optional[bool]=False,
-        validation: Optional[bool]=True,
-        fill_polygon: Optional[bool]=False,
-        tolerance: Optional[bool]=0.001):
+        z: float=0.0, 
+        interpolated: bool=False, 
+        merge_faces: bool=False,
+        validation: bool=True,
+        fill_polygon: bool=False,
+        tolerance: bool=0.001):
         self._settings = {
             'z': z,
             'merge_faces': merge_faces,
-            'interolation': interpolated,
+            'interpolated': interpolated,
             'validation': validation,
             'fill_polygon': fill_polygon,
-            'tolernace': tolerance
+            'tolerance': tolerance
         }
     
     @classmethod
@@ -81,3 +81,12 @@ class Options:
     def get(self, 
         keyword: str):
         return self._settings.get(keyword)
+    
+    def set(self, 
+        keyword: str,
+        value: Any):
+        self._settings[keyword] = value
+    
+    @property
+    def settings(self):
+        return self._settings

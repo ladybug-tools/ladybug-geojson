@@ -164,7 +164,6 @@ def test_geojson_to_linesegment():
         .from_end_points(Point2D(40, 40),
         Point2D(30, 10))]
 
-
 def test_geojson_to_polyline():
     valid_2d = '''{
         "type": "LineString", 
@@ -181,9 +180,11 @@ def test_geojson_to_polyline():
             Point2D(11.1212678, 46.0686443),
             Point2D(11.1212316,46.0688409),
             Point2D(11.1212400, 46.0700000)])
-        
+    
+    options = Options(interpolated=True)
+
     pl_2d = to_polyline2d(valid_2d, 
-        interpolated=True)
+        options)
     assert pl_2d.interpolated == True
     
     valid_2d = '''{
@@ -398,8 +399,10 @@ def test_geojson_to_face():
         Point3D(45, 20, 0)
     ]
 
+    options = Options(merge_faces=True)
+
     pl_2d = to_face3d(valid_2d, 
-        try_merge=True)
+        options)
     assert pl_2d is not None
     assert type(pl_2d) == Polyface3D or list
     assert pl_2d == Polyface3D.from_faces([
@@ -541,8 +544,8 @@ def test_geojson_to_collection():
     }]
     }
     '''
-    coll = to_collection_2d(invalid_2d,
-        options)
+    coll = to_collection_2d(invalid_2d, 
+        options=options)
     assert coll is None
 
     valid_3d = ''' {
@@ -569,11 +572,13 @@ def test_geojson_to_collection():
             ]
         ]
     }]
-    }
-    '''
+    }'''
+
+    options.set('interpolated', True)
+    options.set('fill_polygon', False)
 
     coll = to_collection_3d(valid_3d,
-        interpolated=True)
+        options)
     assert coll is not None
     assert type(coll) == list
     assert coll == [
@@ -588,7 +593,7 @@ def test_geojson_to_collection():
 
     # force 3D even if 2D
     coll = to_collection_3d(valid_2d,
-        interpolated=True)
+        options)
     assert coll is not None
     assert type(coll) == list
     assert coll == [
