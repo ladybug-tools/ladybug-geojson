@@ -18,11 +18,11 @@ class RFC7946(Enum):
 def _get_data_from_json(json_string: str,
     keyword: RFC7946,
     target: List[GeojSONTypes],
-    validation: Optional[bool]=False):
+    validation: Optional[bool]=True):
 
     sel = None
     # complete validation with GeoJSON schema
-    if not validation:
+    if validation:
         validator = _Validator(json=json_string, 
             target=target)
         if not validator.selection:
@@ -32,7 +32,7 @@ def _get_data_from_json(json_string: str,
     obj = json.loads(json_string)
 
     # get just the type as fast validation
-    if validation:
+    if not validation:
         try:
             sel = GeojSONTypes(obj.get('type'))
         except:
@@ -48,9 +48,10 @@ class Options:
 
     Args:
         z: valid Feature JSON string.
-        interpolation: set it to true to create smooth polylines.
+        interpolated: set it to true to create smooth polylines.
         merge_faces: try to create polyface from list of faces, only if MultiPolygon.
-        validation: set it to true to skip GeoJSON validation.
+        validation: set it to false to skip GeoJSON validation.
+        fill_polygon: set it to true to create faces instead of polygon.
         tolerance: number to use as tolerance for the polyface operatation.
     Properties:
         * settings
@@ -59,15 +60,17 @@ class Options:
 
     def __init__(self,
         z: Optional[float]=0.0, 
-        interpolation: Optional[bool]=False, 
+        interpolated: Optional[bool]=False, 
         merge_faces: Optional[bool]=False,
-        validation: Optional[bool]=False,
+        validation: Optional[bool]=True,
+        fill_polygon: Optional[bool]=False,
         tolerance: Optional[bool]=0.001):
         self._settings = {
             'z': z,
             'merge_faces': merge_faces,
-            'interolation': interpolation,
+            'interolation': interpolated,
             'validation': validation,
+            'fill_polygon': fill_polygon,
             'tolernace': tolerance
         }
     
@@ -75,6 +78,6 @@ class Options:
     def options_factory(cls):
         return cls()
 
-    @property
-    def settings(self):
-        return self._settings
+    def get(self, 
+        keyword: str):
+        return self._settings.get(keyword)

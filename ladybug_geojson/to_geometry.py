@@ -9,7 +9,7 @@ from ._geometry_helper import ( _add_z_coordinate,
     _get_line_or_polyline_3d,
     _to_polygon_2d, _to_face )
 from ._geojson_helper import ( _get_data_from_json,
-    RFC7946)
+    RFC7946, Options)
 
 from typing import List, Optional, Union
 try:
@@ -32,9 +32,7 @@ except ImportError as e:
 '''____________COLLECTION GEOMETRY TRANSLATORS____________'''
 
 def to_collection_2d(json_string: str, 
-    interpolated: Optional[bool]=False,
-    fill_polygon: Optional[bool]=False,
-    validation: Optional[bool]=False):
+    options: Optional[Options]=Options.options_factory):
     '''Ladybug Geometry 2D from GEOJSON GeometryCollection.
     Mapping is
     - POINT > Point2D 
@@ -50,7 +48,11 @@ def to_collection_2d(json_string: str,
         fill_polygon: set it to true to create faces instead of polygon.
         validation: DO NOT USE THIS INPUT if you want automatic validation.
     '''
+    # preparation
     mapping = [GeojSONTypes.GEOMETRYCOLLECTION]
+    validation = options.get('validation')
+    interpolated = options.get('interpolated')
+    fill_polygon = options.get('fill_polygon')
 
     arr, schema_used = _get_data_from_json(json_string, 
         keyword=RFC7946.GEOMETRY_COLLECTION,
@@ -63,34 +65,34 @@ def to_collection_2d(json_string: str,
     for item in arr:
         if item.get('type') == GeojSONTypes.POINT.value:
             item = json.dumps(item)
-            res.append(to_point2d(item, validation=True))
+            res.append(to_point2d(item, validation=False))
         elif item.get('type') == GeojSONTypes.MULTIPOINT.value:
             item = json.dumps(item)
-            res.extend(to_point2d(item, validation=True))
+            res.extend(to_point2d(item, validation=False))
         elif item.get('type') == GeojSONTypes.LINESTRING.value:
             item = json.dumps(item)
             res.append(to_polyline2d(item, interpolated, 
-                validation=True))
+                validation=False))
         elif item.get('type') == GeojSONTypes.MULTILINESTRING.value:
             item = json.dumps(item)
             res.extend(to_polyline2d(item, interpolated, 
-                validation=True))
+                validation=False))
         elif item.get('type') == GeojSONTypes.POLYGON.value:
             item = json.dumps(item)
             if fill_polygon:
                 res.append(to_face3d(item, 
-                    validation=True))
+                    validation=False))
             else:
                 res.append(to_polygon2d(item, 
-                    validation=True))
+                    validation=False))
         elif item.get('type') == GeojSONTypes.MULTIPOLYGON.value:
             item = json.dumps(item)
             if fill_polygon:
                 res.extend(to_face3d(item,
-                validation=True))
+                validation=False))
             else:
                 res.extend(to_polygon2d(item,
-                validation=True))
+                validation=False))
 
     return res
 

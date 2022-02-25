@@ -18,7 +18,7 @@ from ladybug_geojson.to_geometry import (
     to_mesh3d,
     to_collection_2d,
     to_collection_3d )
-
+from ladybug_geojson._geojson_helper import Options
 try:
     from ladybug_geometry.geometry2d.pointvector import Vector2D, Point2D
     from ladybug_geometry.geometry2d.ray import Ray2D
@@ -500,9 +500,9 @@ def test_geojson_to_collection():
         Point3D(45, 20, 0)
     ]
 
-
-    coll = to_collection_2d(valid_2d,
-        fill_polygon=True)
+    options = Options(fill_polygon=True)
+    coll = to_collection_2d(valid_2d, 
+        options)
     assert coll is not None
     assert type(coll) == list
     assert coll == [
@@ -542,7 +542,7 @@ def test_geojson_to_collection():
     }
     '''
     coll = to_collection_2d(invalid_2d,
-        fill_polygon=True)
+        options)
     assert coll is None
 
     valid_3d = ''' {
