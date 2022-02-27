@@ -55,10 +55,6 @@ def get_data_from_geojson_type(json_string: str,
     return arr, sel, None
 
 
-
-
-
-
 '''____________PRIVATE VALIDATION FUNCTION____________'''
 
 def _run_validation(json_string: str,
