@@ -163,8 +163,8 @@ def from_geojson(json_string: str,
         target=target
     )
 
-    if not sel:
-        return None, None, err
+    if err:
+        return err
     
     # serialize
     item = json.dumps(obj)
