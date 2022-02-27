@@ -1,6 +1,9 @@
 # coding=utf-8
 import pytest
-from ladybug_geojson.convert import from_geojson
+from ladybug_geojson.convert import ( from_geojson,
+    from_file )
+from pathlib import Path
+from ladybug_geojson.config import Options
 
 try:
     # from ladybug_geometry.geometry2d.pointvector import Vector2D, Point2D
@@ -72,3 +75,13 @@ def test_geojson_to_feature():
     assert len(objs) == 3
     assert objs[2].geometry == Face3D(boundary=vertices)
     assert type(objs[1].geometry) is Polyline3D 
+
+
+def test_from_file():
+    fp = './files/italy.json'
+    env_path = Path(__file__).parent
+    full_path = env_path.joinpath(fp)
+
+    objs = from_file(full_path)
+    print(len(objs))
+    assert type(objs[0].geometry) == Face3D

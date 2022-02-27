@@ -1,4 +1,5 @@
 import json
+from pathlib import Path
 from typing import Optional
 from ladybug_geojson.config import Options
 from ladybug_geojson.geojson_helper import ( RFC7946, 
@@ -15,6 +16,76 @@ from ladybug_geojson.to_geometry import ( to_collection_2d,
 from .ladybug_feature import LadybugFeature
 
 '''____________FROM GEOJSON DIRECTLY____________'''
+
+def from_file(filepath: str,
+    options: Optional[Options]=Options.options_factory(),
+    is_3d: Optional[bool]=False):
+    '''Function to convert geojson file into ladybug entities.
+    
+    Mapping for is_3d
+    - POINT > Point3D 
+    - MULTIPOINT > List[Point3D]
+    - LINESTRING > LineSegment3D or Polyline3D
+    - MULTILINESTRING > List[LineSegment3D] or List[Polyline3D]
+    - POLYGON > Face3D
+    - MULTIPOLYGON > List[Face3D]
+    - GEOMETRYCOLLECTION >
+        - POINT > Point3D 
+        - MULTIPOINT > List[Point3D]
+        - LINESTRING > LineSegment3D or Polyline3D
+        - MULTILINESTRING > List[LineSegment3D] or List[Polyline3D]
+        - POLYGON > Face3D
+        - MULTIPOLYGON > List[Face3D]
+    - FEATURE >
+        - POINT > Point3D 
+        - MULTIPOINT > List[Point3D]
+        - LINESTRING > LineSegment3D or Polyline3D
+        - MULTILINESTRING > List[LineSegment3D] or List[Polyline3D]
+        - POLYGON > Face3D
+        - MULTIPOLYGON > List[Face3D]
+
+    Mapping for not is_3d
+    - POINT > Point2D 
+    - MULTIPOINT > List[Point2D]
+    - LINESTRING > LineSegment2D or Polyline2D
+    - MULTILINESTRING > List[LineSegment2D] or List[Polyline2D]
+    - POLYGON > Polygon2D or Face3D (on 2D space)
+    - MULTIPOLYGON > List[Polygon2D] or List[Face3D]
+    - GEOMETRYCOLLECTION >
+        - POINT > Point2D 
+        - MULTIPOINT > List[Point2D]
+        - LINESTRING > LineSegment2D or Polyline2D
+        - MULTILINESTRING > List[LineSegment2D] or List[Polyline2D]
+        - POLYGON > Polygon2D or Face3D (on 2D space)
+        - MULTIPOLYGON > List[Polygon2D] or List[Face3D] 
+    - FEATURE >
+        - POINT > Point3D 
+        - MULTIPOINT > List[Point3D]
+        - LINESTRING > LineSegment3D or Polyline3D
+        - MULTILINESTRING > List[LineSegment3D] or List[Polyline3D]
+        - POLYGON > Face3D
+        - MULTIPOLYGON > List[Face3D]
+
+    Args:
+        json_string: GeoJSON string.
+        options: Options object to use for mapping.
+        is_3d: force to convert to 3d entities only.
+            Note that LadybugFace has 3d geometry by default.
+
+    Return:
+        a ladybug geometry OR a list of ladybug geometry OR
+        a LadybugFeature OR a list of LadybugFeature
+    '''
+    fp = Path(filepath)
+
+    res = []
+    if fp.exists():
+        text = fp.read_text()
+        res = from_geojson(json_string=text, 
+            options=options, 
+            is_3d=is_3d)
+    return res
+
 
 def from_geojson(json_string: str,
     options: Optional[Options]=Options.options_factory(),
