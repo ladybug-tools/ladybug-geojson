@@ -4,9 +4,10 @@ import json
 from typing import List, Optional
 from ._validator import ( _Validator,
     GeojSONTypes )
-from .geojson_helper import ( _get_data_from_json,
-    RFC7946, Options )
-from .to_geometry import ( to_face3d, to_point3d, to_polyline3d )
+from .config import Options
+from .to_geometry import to_face3d, to_point3d, to_polyline3d
+from .geojson_helper import ( get_data_from_geojson_type,
+    RFC7946 )
 
 class LadybugFeature:
     '''Ladybug feature
@@ -43,18 +44,18 @@ class LadybugFeature:
 
     def _set_properties(self,
         json_string: str):
-        prop, feature_schema = _get_data_from_json(json_string, 
+        prop, sel, err = get_data_from_geojson_type(json_string, 
             keyword=RFC7946.PROPERTIES,
             target=[GeojSONTypes.FEATURE],
             validation=False,
             shallow_validation=RFC7946.PROPERTIES)
         
-        if not feature_schema:
-            return
+        if not sel:
+            return err
 
         if not self._geometry:
             self._properties = None
-            return
+            return err
         
         self._properties = prop
 
@@ -64,14 +65,14 @@ class LadybugFeature:
         validation = self._options.get('validation')
 
         # validate here
-        geo, feature_schema = _get_data_from_json(json_string, 
+        geo, sel, err = get_data_from_geojson_type(json_string, 
         keyword=RFC7946.GEOMETRY,
         target=[GeojSONTypes.FEATURE],
         validation=validation)
         
-        if not feature_schema:
+        if not sel:
             self._geometry = None
-            return
+            return err
         
         # get json schema
         geo_schema = GeojSONTypes(geo.get('type'))
@@ -112,13 +113,13 @@ class LadybugFeature:
         validation = options.get('validation')
 
         # validate here
-        features, f_schema = _get_data_from_json(json_string, 
+        features, sel, err = get_data_from_geojson_type(json_string, 
         keyword=RFC7946.FEATURES,
         target=[GeojSONTypes.FEATURE_COLLECTION],
         validation=validation)   
 
-        if not f_schema:
-            return
+        if not sel:
+            return err
         
         # skip validation
         child_options = Options(validation=False)

@@ -17,7 +17,7 @@ from ladybug_geojson.to_geometry import (
     to_mesh3d,
     to_collection_2d,
     to_collection_3d )
-from ladybug_geojson.geojson_helper import Options
+from ladybug_geojson.config import Options
 try:
     from ladybug_geometry.geometry2d.pointvector import Vector2D, Point2D
     from ladybug_geometry.geometry2d.ray import Ray2D
@@ -71,7 +71,7 @@ def test_geojson_to_vector():
 
     invalid_2d = '{"type": "Point","coordinates": [125.6]}'
     vec_2d = to_vector2d(invalid_2d)
-    assert vec_2d is None
+    assert type(vec_2d) == str
 
 def test_geojson_to_point():
     valid_2d = '{"type": "Point","coordinates": [125.6, 10.1]}'
@@ -175,7 +175,7 @@ def test_geojson_to_linesegment():
     }'''
 
     ln_2d = to_linesegment2d(invalid_2d)
-    assert ln_2d is None
+    assert type(ln_2d) == str 
 
 def test_geojson_to_polyline():
     valid_2d = '''{
@@ -350,7 +350,7 @@ def test_geojson_to_polygon():
         ]
     }'''
     pl_2d = to_polygon2d(invalid_2d)
-    assert pl_2d is None
+    assert type(pl_2d) == str 
 
 def test_geojson_to_face():
     valid_2d = '''{
@@ -447,7 +447,7 @@ def test_geojson_to_face():
     }'''
 
     face = to_face3d(invalid_2d)
-    assert face is None
+    assert type(face) == str 
 
 def test_geojson_to_mesh():
     valid_2d = '''{
@@ -584,7 +584,7 @@ def test_geojson_to_collection():
     '''
     coll = to_collection_2d(invalid_2d, 
         options=options)
-    assert coll is None
+    assert type(coll) == str
 
     valid_3d = ''' {
     "type": "GeometryCollection",

@@ -32,7 +32,8 @@ class _Validator:
         json: input JSON string 
         target: list of GeojSONTypes used for validation
     '''
-    __slots__ = ('_selection')
+    __slots__ = ('_selection',
+        '_error')
 
     def __init__(self, 
         json: str,
@@ -46,11 +47,17 @@ class _Validator:
         ''' Schema used '''
         return self._selection
 
+    @property
+    def error(self):
+        ''' Error '''
+        return self._error
+
     def _validation(self, 
         data: str, 
         target: List[GeojSONTypes]):
         # get geojson type
         obj = json.loads(data)
+        self._error = None
         
         # type key not found
         tp = obj.get('type')
@@ -74,15 +81,15 @@ class _Validator:
                 schema=valid_schema)
             
         except SchemaError as e:
-            print(f'Geojson schema is not valid: {e}')
+            self._error = f'Geojson schema is not valid: {e}'
             return
 
         except ValidationError as e:
-            print(f'Geojson is not valid: {e}')
+            self._error = f'Geojson is not valid: {e}'
             return
 
         except Exception as e:
-            print(e)
+            self._error = e
             return
         
         return GeojSONTypes(tp)

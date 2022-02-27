@@ -1,6 +1,7 @@
 # coding=utf-8
 import pytest
 
+from ladybug_geojson.config import Options
 from ladybug_geojson.ladybug_feature import LadybugFeature
 
 try:
@@ -9,7 +10,6 @@ try:
 except ImportError as e:
     raise ImportError(
         f'Failed to import ladybug_geometry.\n{e}')
-from ladybug_geojson.geojson_helper import Options
 
 def test_geojson_to_feature():
     valid_feature = '''
@@ -182,4 +182,4 @@ def test_geojson_to_featurecollection():
     }'''
 
     feature = LadybugFeature.from_featurecollection(invalid_feature)
-    assert feature is None
+    assert type(feature) == str 

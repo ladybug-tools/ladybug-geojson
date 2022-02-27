@@ -8,10 +8,11 @@ from ._geometry_helper import ( _add_z_coordinate,
     _get_line_or_polyline_2d,
     _get_line_or_polyline_3d,
     _to_polygon_2d, _to_face )
-from .geojson_helper import ( _get_data_from_json,
-    RFC7946, Options)
-
+from .geojson_helper import ( get_data_from_geojson_type,
+    RFC7946)
+from .config import Options
 from typing import List, Optional, Union
+
 try:
     from ladybug_geometry.geometry2d.pointvector import Vector2D, Point2D
     from ladybug_geometry.geometry2d.line import LineSegment2D
@@ -50,12 +51,12 @@ def to_collection_2d(json_string: str,
     validation = options.get('validation')
     fill_polygon = options.get('fill_polygon')
 
-    arr, schema_used = _get_data_from_json(json_string, 
+    arr, sel, err = get_data_from_geojson_type(json_string, 
         keyword=RFC7946.GEOMETRY_COLLECTION,
         target=mapping,
         validation=validation)
     if not arr:
-        return
+        return err
     
     res = []
 
@@ -110,12 +111,12 @@ def to_collection_3d(json_string: str,
     mapping = [GeojSONTypes.GEOMETRYCOLLECTION]
     validation = options.get('validation')
 
-    arr, schema_used = _get_data_from_json(json_string, 
+    arr, sel, err = get_data_from_geojson_type(json_string, 
         keyword=RFC7946.GEOMETRY_COLLECTION,
         target=mapping,
         validation=validation)
     if not arr:
-        return
+        return err
 
     # skip validation for childs
     child_options = Options(validation=False)
@@ -159,14 +160,14 @@ def to_vector2d(json_string: str,
     mapping = [GeojSONTypes.POINT, GeojSONTypes.MULTIPOINT]
     validation = options.get('validation')
 
-    arr, schema_used = _get_data_from_json(json_string, 
+    arr, sel, err = get_data_from_geojson_type(json_string, 
         keyword=RFC7946.COORDINATES,
         target=mapping,
         validation=validation)
     if not arr:
-        return
+        return err
 
-    if schema_used == GeojSONTypes.POINT:
+    if sel == GeojSONTypes.POINT:
         return Vector2D.from_array(arr)
     else:
         return [Vector2D.from_array(_) for _ in arr]
@@ -185,14 +186,14 @@ def to_point2d(json_string: str,
     mapping = [GeojSONTypes.POINT, GeojSONTypes.MULTIPOINT]
     validation = options.get('validation')
 
-    arr, schema_used = _get_data_from_json(json_string,
+    arr, sel, err = get_data_from_geojson_type(json_string,
         keyword=RFC7946.COORDINATES,
         target=mapping,
         validation=validation)
     if not arr:
-        return
+        return err
 
-    if schema_used == GeojSONTypes.POINT:
+    if sel == GeojSONTypes.POINT:
         return Point2D.from_array(arr)
     else:
         return [Point2D.from_array(_) for _ in arr]
@@ -212,14 +213,14 @@ def to_linesegment2d(json_string: str,
             GeojSONTypes.MULTILINESTRING]
     validation = options.get('validation')
 
-    arr, schema_used = _get_data_from_json(json_string,
+    arr, sel, err = get_data_from_geojson_type(json_string,
         keyword=RFC7946.COORDINATES,
         target=mapping,
         validation=validation)
     if not arr:
-        return
+        return err
 
-    if schema_used == GeojSONTypes.LINESTRING:
+    if sel == GeojSONTypes.LINESTRING:
         return _get_line_2d(arr)
     else:
         return list(map(_get_line_2d, arr))
@@ -244,14 +245,14 @@ def to_polyline2d(json_string: str,
     validation = options.get('validation')
     interpolated = options.get('interpolated')
 
-    arr, schema_used = _get_data_from_json(json_string,
+    arr, sel, err = get_data_from_geojson_type(json_string,
         keyword=RFC7946.COORDINATES,
         target=mapping,
         validation=validation)
     if not arr:
-        return
+        return err
 
-    if schema_used == GeojSONTypes.LINESTRING:
+    if sel == GeojSONTypes.LINESTRING:
         return _get_line_or_polyline_2d(arr, 
             interpolated=interpolated)
     else:
@@ -273,14 +274,14 @@ def to_polygon2d(json_string: str,
             GeojSONTypes.MULTIPOLYGON]
     validation = options.get('validation')
 
-    arr, schema_used = _get_data_from_json(json_string,
+    arr, sel, err = get_data_from_geojson_type(json_string,
         keyword=RFC7946.COORDINATES,
         target=mapping,
         validation=validation)
     if not arr:
-        return
+        return err
 
-    if schema_used == GeojSONTypes.POLYGON:
+    if sel == GeojSONTypes.POLYGON:
         return _to_polygon_2d(arr)
     else:
         return list(map(_to_polygon_2d, arr))
@@ -299,7 +300,7 @@ def to_mesh2d(json_string: str,
         options=options)
     
     if not face:
-        return
+        return 'Validation err'
     
     if type(face) == list:
         return [_.triangulated_mesh2d for _ in face]
@@ -323,14 +324,14 @@ def to_vector3d(json_string: str,
     z = options.get('z')
     validation = options.get('validation')
 
-    arr, schema_used = _get_data_from_json(json_string,
+    arr, sel, err = get_data_from_geojson_type(json_string,
         keyword=RFC7946.COORDINATES,
         target=mapping,
         validation=validation)
     if not arr:
-        return
+        return err
     
-    if schema_used == GeojSONTypes.POINT:
+    if sel == GeojSONTypes.POINT:
         return Vector3D.from_array(_add_z_coordinate(arr, 
             z))
     else:
@@ -355,14 +356,14 @@ def to_point3d(json_string: str,
     z = options.get('z')
     validation = options.get('validation')
 
-    arr, schema_used = _get_data_from_json(json_string,
+    arr, sel, err = get_data_from_geojson_type(json_string,
         keyword=RFC7946.COORDINATES,
         target=mapping,
         validation=validation)
     if not arr:
-        return
+        return err
 
-    if schema_used == GeojSONTypes.POINT:
+    if sel == GeojSONTypes.POINT:
         return Point3D.from_array(_add_z_coordinate(arr, 
             z))
     else:
@@ -388,14 +389,14 @@ def to_linesegment3d(json_string: str,
     z = options.get('z')
     validation = options.get('validation')
 
-    arr, schema_used = _get_data_from_json(json_string,
+    arr, sel, err = get_data_from_geojson_type(json_string,
         keyword=RFC7946.COORDINATES,
         target=mapping,
         validation=validation)
     if not arr:
-        return
+        return err
 
-    if schema_used == GeojSONTypes.LINESTRING:
+    if sel == GeojSONTypes.LINESTRING:
         return _get_line_3d(arr, z)
     else:
         return list(map(lambda _: 
@@ -422,14 +423,14 @@ def to_polyline3d(json_string: str,
     interpolated = options.get('interpolated')
     z = options.get('z')
 
-    arr, schema_used = _get_data_from_json(json_string,
+    arr, sel, err = get_data_from_geojson_type(json_string,
         keyword=RFC7946.COORDINATES,
         target=mapping,
         validation=validation)
     if not arr:
-        return
+        return err
 
-    if schema_used == GeojSONTypes.LINESTRING:
+    if sel == GeojSONTypes.LINESTRING:
         return _get_line_or_polyline_3d(arr, 
             interpolated=interpolated, 
             z=z)
@@ -461,14 +462,14 @@ def to_face3d(json_string: str,
     tolerance = options.get('tolerance')
     z = options.get('z')
 
-    arr, schema_used = _get_data_from_json(json_string,
+    arr, sel, err = get_data_from_geojson_type(json_string,
         keyword=RFC7946.COORDINATES,
         target=mapping,
         validation=validation)
     if not arr:
-        return
+        return err
 
-    if schema_used == GeojSONTypes.POLYGON:
+    if sel == GeojSONTypes.POLYGON:
         return _to_face(arr, z)
     
     faces = list(map(lambda _: 
@@ -496,7 +497,7 @@ def to_mesh3d(json_string: str,
         options=options)
     
     if not face:
-        return
+        return 'Validation err'
     
     if type(face) == list:
         return [_.triangulated_mesh3d for _ in face]
