@@ -78,10 +78,11 @@ def test_geojson_to_feature():
 
 
 def test_from_file():
-    fp = './files/italy.json'
+    fp = './files/molise.json'
     env_path = Path(__file__).parent
     full_path = env_path.joinpath(fp)
 
     objs = from_file(full_path)
     print(len(objs))
     assert type(objs[0].geometry) == Face3D
+    assert objs[30].properties['name'] == 'Larino'
