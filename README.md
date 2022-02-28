@@ -52,3 +52,7 @@ objs = from_geojson(geojson)
 # make commands
 - Generate docs: `make create-doc`
 - Run tests: `make run-tests`
+
+## todo
+- [ ] add package
+- [ ] future release - add from_geometry and to_geojson
