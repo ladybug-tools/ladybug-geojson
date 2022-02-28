@@ -52,6 +52,7 @@ objs = from_geojson(geojson)
 # make commands
 - Generate docs: `make create-doc`
 - Run tests: `make run-tests`
+- Generate package manually: `make build`
 
 ## todo
 - [ ] license type to use
