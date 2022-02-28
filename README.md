@@ -54,5 +54,6 @@ objs = from_geojson(geojson)
 - Run tests: `make run-tests`
 
 ## todo
-- [ ] add package
+- [ ] license type to use
+- [ ] fix package: remove tests
 - [ ] future release - add from_geometry and to_geojson

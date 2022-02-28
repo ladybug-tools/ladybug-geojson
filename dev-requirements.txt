@@ -1,3 +1,4 @@
 pytest
 osmnx
 pdoc
+wheel
