@@ -47,8 +47,7 @@ class LadybugFeature:
         prop, sel, err = get_data_from_geojson_type(json_string, 
             keyword=RFC7946.PROPERTIES,
             target=[GeojSONTypes.FEATURE],
-            validation=False,
-            shallow_validation=RFC7946.PROPERTIES)
+            validation=False)
         
         if not sel:
             return err

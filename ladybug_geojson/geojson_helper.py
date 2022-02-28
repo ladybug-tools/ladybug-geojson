@@ -22,8 +22,7 @@ class RFC7946(Enum):
 def get_data_from_geojson_type(json_string: str,
     keyword: RFC7946,
     target: List[GeojSONTypes],
-    validation: Optional[bool]=True,
-    shallow_validation: Optional[RFC7946]=RFC7946.TYPE):
+    validation: Optional[bool]=True):
     '''Function to validate data and extract data by keyword.
     
     Args:
@@ -31,10 +30,8 @@ def get_data_from_geojson_type(json_string: str,
         keyword: RFC7946 keyword to use for data query (data to extract).
         target: list of schema used for validation.
         validation: enable or disable the validation. If disabled it check 
-            using shallow_validation
-        shallow_validation: fast validation using just a keyword.
-            if TYPE it returns GeojSONTypes
-            if PROPERTIES it returns property keyword itself
+            using shallow_validation. If it is disabled a fast validation will be
+            used - just the TYPE keyword it returns GeojSONTypes
 
     Return:
         a tuple with 3 items (objects, schema used, error 
@@ -44,8 +41,7 @@ def get_data_from_geojson_type(json_string: str,
     obj, sel, err = _run_validation(
         json_string=json_string,
         target=target,
-        validation=validation,
-        shallow_validation=shallow_validation
+        validation=validation
     )
     
     if not sel:
@@ -59,8 +55,7 @@ def get_data_from_geojson_type(json_string: str,
 
 def _run_validation(json_string: str,
     target: List[GeojSONTypes],
-    validation: Optional[bool]=True,
-    shallow_validation: Optional[RFC7946]=RFC7946.TYPE):
+    validation: Optional[bool]=True):
     '''Function to validate data and extract data by keyword.
     
     Args:
@@ -68,10 +63,8 @@ def _run_validation(json_string: str,
         keyword: RFC7946 keyword to use for data query (data to extract).
         target: list of schema used for validation.
         validation: enable or disable the validation. If disabled it check 
-            using shallow_validation
-        shallow_validation: fast validation using just a keyword.
-            if TYPE it returns GeojSONTypes
-            if PROPERTIES it returns property keyword itself
+            using shallow_validation. If it is disabled a fast validation will be
+            used - just the TYPE keyword it returns GeojSONTypes
 
     Return:
         a tuple with 3 items (objects, schema used, error 
@@ -91,11 +84,10 @@ def _run_validation(json_string: str,
 
     # fast validation
     if not validation:
-        if shallow_validation == RFC7946.TYPE:
-            sel = GeojSONTypes(obj.get(RFC7946.TYPE.value))
-        elif shallow_validation == RFC7946.PROPERTIES:
-            sel = RFC7946.PROPERTIES
+        tp = obj.get(RFC7946.TYPE.value)
+        if tp:
+            sel = GeojSONTypes(tp)
         else:
-            return None, None, 'Fast validation: keyword not found'
+            return None, None, 'Geojson type not found.'
 
     return obj, sel, None
