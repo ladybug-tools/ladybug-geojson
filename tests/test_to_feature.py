@@ -1,7 +1,7 @@
 # coding=utf-8
 import pytest
 
-from ladybug_geojson.config import Options
+from ladybug_geojson.convert.config import Options
 from ladybug_geojson.ladybug_feature import LadybugFeature
 
 try:

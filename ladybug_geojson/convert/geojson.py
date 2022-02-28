@@ -1,11 +1,11 @@
 import json
 from pathlib import Path
 from typing import Optional
-from ladybug_geojson.config import Options
-from ladybug_geojson.geojson_helper import ( RFC7946, 
+from .config import Options
+from ..geojson_helper import ( RFC7946, 
     _run_validation  )
-from ._validator import GeojSONTypes
-from ladybug_geojson.to_geometry import ( to_collection_2d, 
+from .._validator import GeojSONTypes
+from .to_geometry import ( to_collection_2d, 
     to_collection_3d, 
     to_face3d, 
     to_linesegment2d, 
@@ -13,7 +13,7 @@ from ladybug_geojson.to_geometry import ( to_collection_2d,
     to_point2d, 
     to_point3d, 
     to_polygon2d )
-from .ladybug_feature import LadybugFeature
+from ..ladybug_feature import LadybugFeature
 
 '''____________FROM GEOJSON DIRECTLY____________'''
 

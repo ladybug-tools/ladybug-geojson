@@ -5,7 +5,7 @@ from enum import ( Enum, unique )
 from ._validator import ( _Validator,
     GeojSONTypes)
 from typing import Any, List, Optional, Union
-from .config import Options
+from .convert.config import Options
 
 '''____________RFC 7946 KEYWORDS____________'''
 
@@ -29,9 +29,9 @@ def get_data_from_geojson_type(json_string: str,
         json_string: JSON string to use for validation and query.
         keyword: RFC7946 keyword to use for data query (data to extract).
         target: list of schema used for validation.
-        validation: enable or disable the validation. If disabled it check 
-            using shallow_validation. If it is disabled a fast validation will be
-            used - just the TYPE keyword it returns GeojSONTypes
+        validation: enable or disable the validation using Geojson Schema. 
+            If it is disabled a fast validation will be used - 
+            just the TYPE keyword it returns GeojSONTypes
 
     Return:
         a tuple with 3 items (objects, schema used, error 
@@ -62,9 +62,9 @@ def _run_validation(json_string: str,
         json_string: JSON string to use for validation and query.
         keyword: RFC7946 keyword to use for data query (data to extract).
         target: list of schema used for validation.
-        validation: enable or disable the validation. If disabled it check 
-            using shallow_validation. If it is disabled a fast validation will be
-            used - just the TYPE keyword it returns GeojSONTypes
+        validation: enable or disable the validation using Geojson Schema. 
+            If it is disabled a fast validation will be used - 
+            just the TYPE keyword it returns GeojSONTypes
 
     Return:
         a tuple with 3 items (objects, schema used, error 

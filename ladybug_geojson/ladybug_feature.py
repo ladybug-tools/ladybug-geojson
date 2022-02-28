@@ -4,8 +4,8 @@ import json
 from typing import List, Optional
 from ._validator import ( _Validator,
     GeojSONTypes )
-from .config import Options
-from .to_geometry import to_face3d, to_point3d, to_polyline3d
+from .convert.config import Options
+from .convert.to_geometry import to_face3d, to_point3d, to_polyline3d
 from .geojson_helper import ( get_data_from_geojson_type,
     RFC7946 )
 

@@ -2,7 +2,7 @@
 import pytest
 
 import json
-from ladybug_geojson.to_geometry import ( 
+from ladybug_geojson.convert.to_geometry import ( 
     to_mesh2d,
     to_vector2d,
     to_point2d,
@@ -17,7 +17,7 @@ from ladybug_geojson.to_geometry import (
     to_mesh3d,
     to_collection_2d,
     to_collection_3d )
-from ladybug_geojson.config import Options
+from ladybug_geojson.convert.config import Options
 try:
     from ladybug_geometry.geometry2d.pointvector import Vector2D, Point2D
     from ladybug_geometry.geometry2d.ray import Ray2D

@@ -1,9 +1,9 @@
 # coding=utf-8
 import pytest
-from ladybug_geojson.convert import ( from_geojson,
+from ladybug_geojson.convert.geojson import ( from_geojson,
     from_file )
 from pathlib import Path
-from ladybug_geojson.config import Options
+from ladybug_geojson.convert.config import Options
 
 try:
     # from ladybug_geometry.geometry2d.pointvector import Vector2D, Point2D
