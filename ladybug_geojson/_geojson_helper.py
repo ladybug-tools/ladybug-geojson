@@ -11,6 +11,7 @@ from .convert.config import Options
 
 @unique
 class RFC7946(Enum):
+    ''' Keyword used for query '''
     COORDINATES = 'coordinates'
     GEOMETRY_COLLECTION = 'geometries'
     PROPERTIES = 'properties'
@@ -26,10 +27,10 @@ def get_data_from_geojson_type(json_string: str,
     '''Function to validate data and extract data by keyword.
     
     Args:
-        json_string: JSON string to use for validation and query.
-        keyword: RFC7946 keyword to use for data query (data to extract).
-        target: list of schema used for validation.
-        validation: enable or disable the validation using Geojson Schema. 
+    - json_string: JSON string to use for validation and query.
+    - keyword: RFC7946 keyword to use for data query (data to extract).
+    - target: list of schema used for validation.
+    - validation: enable or disable the validation using Geojson Schema. 
             If it is disabled a fast validation will be used - 
             just the TYPE keyword it returns GeojSONTypes
 
@@ -59,10 +60,10 @@ def _run_validation(json_string: str,
     '''Function to validate data and extract data by keyword.
     
     Args:
-        json_string: JSON string to use for validation and query.
-        keyword: RFC7946 keyword to use for data query (data to extract).
-        target: list of schema used for validation.
-        validation: enable or disable the validation using Geojson Schema. 
+    - json_string: JSON string to use for validation and query.
+    - keyword: RFC7946 keyword to use for data query (data to extract).
+    - target: list of schema used for validation.
+    - validation: enable or disable the validation using Geojson Schema. 
             If it is disabled a fast validation will be used - 
             just the TYPE keyword it returns GeojSONTypes
 

@@ -6,7 +6,7 @@ from ._validator import ( _Validator,
     GeojSONTypes )
 from .convert.config import Options
 from .convert.to_geometry import to_face3d, to_point3d, to_polyline3d
-from .geojson_helper import ( get_data_from_geojson_type,
+from ._geojson_helper import ( get_data_from_geojson_type,
     RFC7946 )
 
 class LadybugFeature:
@@ -96,12 +96,12 @@ class LadybugFeature:
 
     @property
     def geometry(self):
-        ''' Geometry '''
+        ''' Geometry. Ladybug geometry '''
         return self._geometry
 
     @property
     def properties(self):
-        ''' Properties '''
+        ''' Properties. Dictionary with all GeoJSON property '''
         return self._properties
 
     @classmethod

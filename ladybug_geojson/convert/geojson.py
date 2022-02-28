@@ -2,7 +2,7 @@ import json
 from pathlib import Path
 from typing import Optional
 from .config import Options
-from ..geojson_helper import ( RFC7946, 
+from .._geojson_helper import ( RFC7946, 
     _run_validation  )
 from .._validator import GeojSONTypes
 from .to_geometry import ( to_collection_2d, 
@@ -67,9 +67,9 @@ def from_file(filepath: str,
         - MULTIPOLYGON > List[Face3D]
 
     Args:
-        json_string: GeoJSON string.
-        options: Options object to use for mapping.
-        is_3d: force to convert to 3d entities only.
+    - json_string: GeoJSON string.
+    - options: Options object to use for mapping.
+    - is_3d: force to convert to 3d entities only.
             Note that LadybugFace has 3d geometry by default.
 
     Return:
@@ -137,10 +137,10 @@ def from_geojson(json_string: str,
         - MULTIPOLYGON > List[Face3D]
 
     Args:
-        json_string: GeoJSON string.
-        options: Options object to use for mapping.
-        is_3d: force to convert to 3d entities only.
-            Note that LadybugFace has 3d geometry by default.
+    - json_string: GeoJSON string.
+    - options: Options object to use for mapping.
+    - is_3d: force to convert to 3d entities only.
+        Note that LadybugFace has 3d geometry by default.
 
     Return:
         a ladybug geometry OR a list of ladybug geometry OR

@@ -8,7 +8,7 @@ from .._geometry_helper import ( _add_z_coordinate,
     _get_line_or_polyline_2d,
     _get_line_or_polyline_3d,
     _to_polygon_2d, _to_face )
-from ..geojson_helper import ( get_data_from_geojson_type,
+from .._geojson_helper import ( get_data_from_geojson_type,
     RFC7946)
 from .config import Options
 from typing import List, Optional, Union
@@ -44,7 +44,8 @@ def to_collection_2d(json_string: str,
     - MULTIPOLYGON > List[Polygon2D] or List[Face3D]
     
     Args:
-        options: Options object to use for mapping.
+    - json_string: GEOJSON geometry string to translate.
+    - options: Options object to use for mapping.
     '''
     # preparation
     mapping = [GeojSONTypes.GEOMETRYCOLLECTION]
@@ -104,8 +105,8 @@ def to_collection_3d(json_string: str,
     - MULTIPOLYGON > List[Face3D]
     
     Args:
-        json_string: GEOJSON geometry string to translate.
-        options: Options object to use for mapping.
+    - json_string: GEOJSON geometry string to translate.
+    - options: Options object to use for mapping.
     '''
     # preparation
     mapping = [GeojSONTypes.GEOMETRYCOLLECTION]
@@ -153,8 +154,8 @@ def to_vector2d(json_string: str,
     '''Ladybug Vector2D from GEOJSON Point or Multipoint.
         
     Args:
-        json_string: GEOJSON geometry string to translate
-        options: Options object to use for mapping.
+    - json_string: GEOJSON geometry string to translate
+    - options: Options object to use for mapping.
     '''
     # preparation
     mapping = [GeojSONTypes.POINT, GeojSONTypes.MULTIPOINT]
@@ -179,8 +180,8 @@ def to_point2d(json_string: str,
     '''Ladybug Point2D from GEOJSON Point or Multipoint.
         
     Args:
-        json_string: GEOJSON geometry string to translate
-        options: Options object to use for mapping.
+    - json_string: GEOJSON geometry string to translate
+    - options: Options object to use for mapping.
     '''
     # preparation
     mapping = [GeojSONTypes.POINT, GeojSONTypes.MULTIPOINT]
@@ -205,8 +206,8 @@ def to_linesegment2d(json_string: str,
     '''Ladybug LineSegment2D from GEOJSON LineString or MultiLineString.
     
     Args:
-        json_string: GEOJSON geometry string to translate.
-        validation: DO NOT USE THIS INPUT if you want automatic validation.
+    - json_string: GEOJSON geometry string to translate.
+    - options: Options object to use for mapping.
     '''
     # preparation
     mapping = [GeojSONTypes.LINESTRING,
@@ -235,9 +236,8 @@ def to_polyline2d(json_string: str,
     two points and it is a LineString.
 
     Args:
-        json_string: GEOJSON geometry string to translate.
-        interpolated: set it to true to create smooth polylines.
-        validation: DO NOT USE THIS INPUT if you want automatic validation.
+    - json_string: GEOJSON geometry string to translate.
+    - options: Options object to use for mapping.
     '''
     # preparation
     mapping = [GeojSONTypes.LINESTRING,
@@ -266,8 +266,8 @@ def to_polygon2d(json_string: str,
     '''Ladybug Polygon2D from a GEOJSON Polygon.
 
     Args:
-        json_string: GEOJSON geometry string to translate.
-        validation: DO NOT USE THIS INPUT if you want automatic validation.
+    - json_string: GEOJSON geometry string to translate.
+    - options: Options object to use for mapping.
     '''
     # preparation
     mapping = [GeojSONTypes.POLYGON, 
@@ -293,8 +293,8 @@ def to_mesh2d(json_string: str,
     '''Ladybug Mesh2D from a GEOJSON Polygon or MultiPolygon.
 
     Args:
-        json_string: GEOJSON geometry string to translate.
-        validation: DO NOT USE THIS INPUT if you want automatic validation.
+    - json_string: GEOJSON geometry string to translate.
+    - options: Options object to use for mapping.
     '''
     face = to_face3d(json_string=json_string,
         options=options)
@@ -315,9 +315,8 @@ def to_vector3d(json_string: str,
     '''Ladybug Vector2D from GEOJSON Point or MultiPoint.
         
     Args:
-        json_string: GEOJSON geometry string to translate.
-        z: it is used if z is missing.
-        validation: DO NOT USE THIS INPUT if you want automatic validation.
+    - json_string: GEOJSON geometry string to translate.
+    - options: Options object to use for mapping.
     '''
     # preparation
     mapping = [GeojSONTypes.POINT, GeojSONTypes.MULTIPOINT]
@@ -347,9 +346,8 @@ def to_point3d(json_string: str,
     '''Ladybug Point2D from GEOJSON Point or MultiPoint.
         
     Args:
-        json_string: GEOJSON geometry string to translate.
-        z: it is used if z is missing.
-        validation: DO NOT USE THIS INPUT if you want automatic validation.
+    - json_string: GEOJSON geometry string to translate.
+    - options: Options object to use for mapping.
     '''
     # preparation
     mapping = [GeojSONTypes.POINT, GeojSONTypes.MULTIPOINT]
@@ -379,9 +377,8 @@ def to_linesegment3d(json_string: str,
     '''Ladybug LineSegment3D from GEOJSON LineString or MultiLineString.
     
     Args:
-        json_string: GEOJSON geometry string to translate.
-        z: it is used if z is missing.
-        validation: DO NOT USE THIS INPUT if you want automatic validation.
+    - json_string: GEOJSON geometry string to translate.
+    - options: Options object to use for mapping.
     '''    
     # preparation
     mapping = [GeojSONTypes.LINESTRING, 
@@ -411,10 +408,8 @@ def to_polyline3d(json_string: str,
     A LineSegment3D will be returned if the input polyline has only two points.
 
     Args:
-        json_string: GEOJSON geometry string to translate.
-        interpolated: set it to true to create smooth polylines.
-        z: it is used if z is missing.
-        validation: DO NOT USE THIS INPUT if you want automatic validation.
+    - json_string: GEOJSON geometry string to translate.
+    - options: Options object to use for mapping.
     '''
     # preparation
     mapping = [GeojSONTypes.LINESTRING, 
@@ -448,11 +443,8 @@ def to_face3d(json_string: str,
     '''Ladybug Face3D or Polyface3D from a GEOJSON Polygon or MultiPolygon.
 
     Args:
-        json_string: GEOJSON geometry string to translate
-        z: it is used if z is missing.
-        try_merge: try to create polyface from list of faces, only if MultiPolygon.
-        tolerance: number to use as tolerance for the polyface operatation.
-        validation: DO NOT USE THIS INPUT if you want automatic validation.
+    - json_string: GEOJSON geometry string to translate.
+    - options: Options object to use for mapping.
     '''
     # preparation
     mapping = [GeojSONTypes.POLYGON, 
@@ -490,8 +482,8 @@ def to_mesh3d(json_string: str,
     '''Ladybug Mesh3D from a GEOJSON Polygon or MultiPolygon.
 
     Args:
-        json_string: GEOJSON geometry string to translate.
-        validation: DO NOT USE THIS INPUT if you want automatic validation.
+    - json_string: GEOJSON geometry string to translate.
+    - options: Options object to use for mapping.
     '''
     face = to_face3d(json_string=json_string,
         options=options)

@@ -29,8 +29,8 @@ class _Validator:
     
     '''Class for geojson validation.
     Args:
-        json: input JSON string 
-        target: list of GeojSONTypes used for validation
+    - json: input JSON string 
+    - target: list of GeojSONTypes used for validation
     '''
     __slots__ = ('_selection',
         '_error')
