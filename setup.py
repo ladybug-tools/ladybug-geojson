@@ -14,7 +14,7 @@ setuptools.setup(
     long_description="Convert geojson types into ladybug geometry types.",
     long_description_content_type="text/plain",
     url="https://github.com/pollination/ladybug-geojson",
-    packages=setuptools.find_packages(exclude=["*tests*"]),
+    packages=setuptools.find_packages(exclude=["tests*"]),
     include_package_data=True,
     python_requires=">=3.7",
     install_requires=requirements,
