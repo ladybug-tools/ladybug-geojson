@@ -4,6 +4,7 @@ from typing import List, Optional, Union
 
 try:
     from ladybug_geometry.geometry2d.pointvector import Point2D
+    from ladybug_geometry.geometry3d.plane import Plane
     from ladybug_geometry.geometry2d.line import LineSegment2D
     from ladybug_geometry.geometry2d.polyline import Polyline2D
     from ladybug_geometry.geometry2d.polygon import Polygon2D
@@ -85,12 +86,18 @@ def _to_face(arr: List[float],
         Point3D.from_array(_add_z_coordinate(_, z)), 
         boundary))
 
+    # I suppose it is on XY plane
+    pt = boundary[0]
+    plane = Plane(o=pt)
+
     if len(arr) == 1:
-        return Face3D(boundary=boundary)
+        return Face3D(boundary=boundary, 
+            plane=plane)
     
     holes = [list(map(lambda l: 
         Point3D.from_array(_add_z_coordinate(l, z)), 
         _[:-1])) for _ in arr[1:]]
     
     return Face3D(boundary=boundary, 
-        holes=holes)
+        holes=holes,
+        plane=plane)
