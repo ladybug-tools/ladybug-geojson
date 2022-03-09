@@ -55,6 +55,4 @@ objs = from_geojson(geojson)
 - Generate package manually: `make build`
 
 ## todo
-- [ ] license type to use
-- [ ] fix package: remove tests
 - [ ] future release - add from_geometry and to_geojson

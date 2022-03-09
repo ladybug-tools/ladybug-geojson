@@ -22,8 +22,8 @@ setuptools.setup(
         "Development Status :: 3 - Alpha",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: Implementation :: CPython",
-        "License :: OSI Approved :: Apache Software License",
+        "License :: OSI Approved :: GNU Affero General Public License v3",
         "Operating System :: OS Independent"
     ],
-    license="Apache-2.0 License"
+    license="AGPL-3.0"
 )
