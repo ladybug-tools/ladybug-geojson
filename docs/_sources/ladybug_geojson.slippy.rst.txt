@@ -1,0 +1,18 @@
+ladybug\_geojson.slippy package
+===============================
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   ladybug_geojson.slippy.map
+
+Module contents
+---------------
+
+.. automodule:: ladybug_geojson.slippy
+   :members:
+   :undoc-members:
+   :show-inheritance:

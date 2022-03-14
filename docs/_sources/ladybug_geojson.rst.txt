@@ -1,0 +1,27 @@
+ladybug\_geojson package
+========================
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   ladybug_geojson.convert
+   ladybug_geojson.slippy
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   ladybug_geojson.ladybug_feature
+
+Module contents
+---------------
+
+.. automodule:: ladybug_geojson
+   :members:
+   :undoc-members:
+   :show-inheritance:
