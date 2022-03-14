@@ -3,7 +3,7 @@
 A library to convert geojson types into ladybug geometry types.
 
 # docs
-[API Documentation](./docs/index.html)
+[API Documentation](https://www.ladybug.tools/ladybug_geojson/docs/)
 
 # examples
 
