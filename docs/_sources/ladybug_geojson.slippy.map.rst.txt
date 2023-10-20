@@ -1,0 +1,7 @@
+ladybug\_geojson.slippy.map module
+==================================
+
+.. automodule:: ladybug_geojson.slippy.map
+   :members:
+   :undoc-members:
+   :show-inheritance:

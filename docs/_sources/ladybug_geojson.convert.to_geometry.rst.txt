@@ -1,0 +1,7 @@
+ladybug\_geojson.convert.to\_geometry module
+============================================
+
+.. automodule:: ladybug_geojson.convert.to_geometry
+   :members:
+   :undoc-members:
+   :show-inheritance:

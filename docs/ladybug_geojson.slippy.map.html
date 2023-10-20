@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>ladybug_geojson.slippy.map module &#8212; ladybug geojson  documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/bootstrap-sphinx.css" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="ladybug_geojson.ladybug_feature module" href="ladybug_geojson.ladybug_feature.html" />
+    <link rel="prev" title="ladybug_geojson.slippy package" href="ladybug_geojson.slippy.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="_static/bootstrap-sphinx.js "></script>
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-inverse navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="index.html">
+          ladybug geojson</a>
+        <span class="navbar-text navbar-version pull-left"><b></b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">ladybug_geojson</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="ladybug_geojson.html">ladybug_geojson package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="ladybug_geojson.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="ladybug_geojson.convert.html">ladybug_geojson.convert package</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="ladybug_geojson.convert.html#submodules">Submodules</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="ladybug_geojson.convert.config.html">ladybug_geojson.convert.config module</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="ladybug_geojson.convert.config.html#ladybug_geojson.convert.config.Options"><code class="docutils literal notranslate"><span class="pre">Options</span></code></a><ul>
+<li class="toctree-l8"><a class="reference internal" href="ladybug_geojson.convert.config.html#ladybug_geojson.convert.config.Options.copy_from_dict"><code class="docutils literal notranslate"><span class="pre">Options.copy_from_dict()</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="ladybug_geojson.convert.config.html#ladybug_geojson.convert.config.Options.get"><code class="docutils literal notranslate"><span class="pre">Options.get()</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="ladybug_geojson.convert.config.html#ladybug_geojson.convert.config.Options.options_factory"><code class="docutils literal notranslate"><span class="pre">Options.options_factory()</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="ladybug_geojson.convert.config.html#ladybug_geojson.convert.config.Options.set"><code class="docutils literal notranslate"><span class="pre">Options.set()</span></code></a></li>
+<li class="toctree-l8"><a class="reference internal" href="ladybug_geojson.convert.config.html#ladybug_geojson.convert.config.Options.settings"><code class="docutils literal notranslate"><span class="pre">Options.settings</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l6"><a class="reference internal" href="ladybug_geojson.convert.from_geometry.html">ladybug_geojson.convert.from_geometry module</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="ladybug_geojson.convert.from_geometry.html#ladybug_geojson.convert.from_geometry.from_arc_2d"><code class="docutils literal notranslate"><span class="pre">from_arc_2d()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l6"><a class="reference internal" href="ladybug_geojson.convert.geojson.html">ladybug_geojson.convert.geojson module</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="ladybug_geojson.convert.geojson.html#ladybug_geojson.convert.geojson.from_file"><code class="docutils literal notranslate"><span class="pre">from_file()</span></code></a></li>
+<li class="toctree-l7"><a class="reference internal" href="ladybug_geojson.convert.geojson.html#ladybug_geojson.convert.geojson.from_geojson"><code class="docutils literal notranslate"><span class="pre">from_geojson()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l6"><a class="reference internal" href="ladybug_geojson.convert.to_geometry.html">ladybug_geojson.convert.to_geometry module</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="ladybug_geojson.convert.to_geometry.html#ladybug_geojson.convert.to_geometry.to_collection_2d"><code class="docutils literal notranslate"><span class="pre">to_collection_2d()</span></code></a></li>
+<li class="toctree-l7"><a class="reference internal" href="ladybug_geojson.convert.to_geometry.html#ladybug_geojson.convert.to_geometry.to_collection_3d"><code class="docutils literal notranslate"><span class="pre">to_collection_3d()</span></code></a></li>
+<li class="toctree-l7"><a class="reference internal" href="ladybug_geojson.convert.to_geometry.html#ladybug_geojson.convert.to_geometry.to_face3d"><code class="docutils literal notranslate"><span class="pre">to_face3d()</span></code></a></li>
+<li class="toctree-l7"><a class="reference internal" href="ladybug_geojson.convert.to_geometry.html#ladybug_geojson.convert.to_geometry.to_linesegment2d"><code class="docutils literal notranslate"><span class="pre">to_linesegment2d()</span></code></a></li>
+<li class="toctree-l7"><a class="reference internal" href="ladybug_geojson.convert.to_geometry.html#ladybug_geojson.convert.to_geometry.to_linesegment3d"><code class="docutils literal notranslate"><span class="pre">to_linesegment3d()</span></code></a></li>
+<li class="toctree-l7"><a class="reference internal" href="ladybug_geojson.convert.to_geometry.html#ladybug_geojson.convert.to_geometry.to_mesh2d"><code class="docutils literal notranslate"><span class="pre">to_mesh2d()</span></code></a></li>
+<li class="toctree-l7"><a class="reference internal" href="ladybug_geojson.convert.to_geometry.html#ladybug_geojson.convert.to_geometry.to_mesh3d"><code class="docutils literal notranslate"><span class="pre">to_mesh3d()</span></code></a></li>
+<li class="toctree-l7"><a class="reference internal" href="ladybug_geojson.convert.to_geometry.html#ladybug_geojson.convert.to_geometry.to_point2d"><code class="docutils literal notranslate"><span class="pre">to_point2d()</span></code></a></li>
+<li class="toctree-l7"><a class="reference internal" href="ladybug_geojson.convert.to_geometry.html#ladybug_geojson.convert.to_geometry.to_point3d"><code class="docutils literal notranslate"><span class="pre">to_point3d()</span></code></a></li>
+<li class="toctree-l7"><a class="reference internal" href="ladybug_geojson.convert.to_geometry.html#ladybug_geojson.convert.to_geometry.to_polygon2d"><code class="docutils literal notranslate"><span class="pre">to_polygon2d()</span></code></a></li>
+<li class="toctree-l7"><a class="reference internal" href="ladybug_geojson.convert.to_geometry.html#ladybug_geojson.convert.to_geometry.to_polyline2d"><code class="docutils literal notranslate"><span class="pre">to_polyline2d()</span></code></a></li>
+<li class="toctree-l7"><a class="reference internal" href="ladybug_geojson.convert.to_geometry.html#ladybug_geojson.convert.to_geometry.to_polyline3d"><code class="docutils literal notranslate"><span class="pre">to_polyline3d()</span></code></a></li>
+<li class="toctree-l7"><a class="reference internal" href="ladybug_geojson.convert.to_geometry.html#ladybug_geojson.convert.to_geometry.to_vector2d"><code class="docutils literal notranslate"><span class="pre">to_vector2d()</span></code></a></li>
+<li class="toctree-l7"><a class="reference internal" href="ladybug_geojson.convert.to_geometry.html#ladybug_geojson.convert.to_geometry.to_vector3d"><code class="docutils literal notranslate"><span class="pre">to_vector3d()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="ladybug_geojson.convert.html#module-ladybug_geojson.convert">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l4 current"><a class="reference internal" href="ladybug_geojson.slippy.html">ladybug_geojson.slippy package</a><ul class="current">
+<li class="toctree-l5 current"><a class="reference internal" href="ladybug_geojson.slippy.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l6 current"><a class="current reference internal" href="#">ladybug_geojson.slippy.map module</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="#ladybug_geojson.slippy.map.get_recurrent_tiles"><code class="docutils literal notranslate"><span class="pre">get_recurrent_tiles()</span></code></a></li>
+<li class="toctree-l7"><a class="reference internal" href="#ladybug_geojson.slippy.map.tile_from_lat_lon"><code class="docutils literal notranslate"><span class="pre">tile_from_lat_lon()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="ladybug_geojson.slippy.html#module-ladybug_geojson.slippy">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="ladybug_geojson.html#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="ladybug_geojson.ladybug_feature.html">ladybug_geojson.ladybug_feature module</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="ladybug_geojson.ladybug_feature.html#ladybug_geojson.ladybug_feature.LadybugFeature"><code class="docutils literal notranslate"><span class="pre">LadybugFeature</span></code></a><ul>
+<li class="toctree-l6"><a class="reference internal" href="ladybug_geojson.ladybug_feature.html#ladybug_geojson.ladybug_feature.LadybugFeature.from_featurecollection"><code class="docutils literal notranslate"><span class="pre">LadybugFeature.from_featurecollection()</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="ladybug_geojson.ladybug_feature.html#ladybug_geojson.ladybug_feature.LadybugFeature.geometry"><code class="docutils literal notranslate"><span class="pre">LadybugFeature.geometry</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="ladybug_geojson.ladybug_feature.html#ladybug_geojson.ladybug_feature.LadybugFeature.properties"><code class="docutils literal notranslate"><span class="pre">LadybugFeature.properties</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="ladybug_geojson.html#module-ladybug_geojson">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">ladybug_geojson</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="ladybug_geojson.html">ladybug_geojson package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="ladybug_geojson.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="ladybug_geojson.convert.html">ladybug_geojson.convert package</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="ladybug_geojson.slippy.html">ladybug_geojson.slippy package</a><ul class="current">
+<li class="toctree-l5 current"><a class="reference internal" href="ladybug_geojson.slippy.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l6 current"><a class="current reference internal" href="#">ladybug_geojson.slippy.map module</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="#ladybug_geojson.slippy.map.get_recurrent_tiles"><code class="docutils literal notranslate"><span class="pre">get_recurrent_tiles()</span></code></a></li>
+<li class="toctree-l7"><a class="reference internal" href="#ladybug_geojson.slippy.map.tile_from_lat_lon"><code class="docutils literal notranslate"><span class="pre">tile_from_lat_lon()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="ladybug_geojson.slippy.html#module-ladybug_geojson.slippy">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="ladybug_geojson.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ladybug_geojson.html#module-ladybug_geojson">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+              
+                
+  <li>
+    <a href="ladybug_geojson.slippy.html" title="Previous Chapter: ladybug_geojson.slippy package"><span class="glyphicon glyphicon-chevron-left visible-sm"></span><span class="hidden-sm hidden-tablet">&laquo; ladybug_geojs...</span>
+    </a>
+  </li>
+  <li>
+    <a href="ladybug_geojson.ladybug_feature.html" title="Next Chapter: ladybug_geojson.ladybug_feature module"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">ladybug_geojs... &raquo;</span>
+    </a>
+  </li>
+              
+            
+            
+            
+            
+              <li class="hidden-sm">
+<div id="sourcelink">
+  <a href="_sources/ladybug_geojson.slippy.map.rst.txt"
+     rel="nofollow">Source</a>
+</div></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+      <div class="col-md-4">
+        <div id="sidebar" class="bs-sidenav" role="complementary"><ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">ladybug_geojson</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="ladybug_geojson.html">ladybug_geojson package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="ladybug_geojson.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="ladybug_geojson.convert.html">ladybug_geojson.convert package</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="ladybug_geojson.slippy.html">ladybug_geojson.slippy package</a><ul class="current">
+<li class="toctree-l5 current"><a class="reference internal" href="ladybug_geojson.slippy.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l6 current"><a class="current reference internal" href="#">ladybug_geojson.slippy.map module</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="#ladybug_geojson.slippy.map.get_recurrent_tiles"><code class="docutils literal notranslate"><span class="pre">get_recurrent_tiles()</span></code></a></li>
+<li class="toctree-l7"><a class="reference internal" href="#ladybug_geojson.slippy.map.tile_from_lat_lon"><code class="docutils literal notranslate"><span class="pre">tile_from_lat_lon()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="ladybug_geojson.slippy.html#module-ladybug_geojson.slippy">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="ladybug_geojson.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ladybug_geojson.html#module-ladybug_geojson">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    <div class="body col-md-8 content" role="main">
+      
+  <section id="module-ladybug_geojson.slippy.map">
+<span id="ladybug-geojson-slippy-map-module"></span><h1>ladybug_geojson.slippy.map module<a class="headerlink" href="#module-ladybug_geojson.slippy.map" title="Permalink to this heading">¶</a></h1>
+<p>Util to get skippy map tilenames.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="ladybug_geojson.slippy.map.get_recurrent_tiles">
+<span class="sig-prename descclassname"><span class="pre">ladybug_geojson.slippy.map.</span></span><span class="sig-name descname"><span class="pre">get_recurrent_tiles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">curr_zoom</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_zoom</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ladybug_geojson/slippy/map.html#get_recurrent_tiles"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ladybug_geojson.slippy.map.get_recurrent_tiles" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get tile coordinates from initial tile.</p>
+<p>Args:
+- x: initial tile x.
+- y: initial tile y.
+- curr_zoom: zoom of the initial tile. Eg. 15.
+- target_zoom: zoom of target tiles. Eg. 16.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ladybug_geojson.slippy.map.tile_from_lat_lon">
+<span class="sig-prename descclassname"><span class="pre">ladybug_geojson.slippy.map.</span></span><span class="sig-name descname"><span class="pre">tile_from_lat_lon</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lat</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lon</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zoom</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ladybug_geojson/slippy/map.html#tile_from_lat_lon"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ladybug_geojson.slippy.map.tile_from_lat_lon" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get tile from lat lon and zoom</p>
+<p>Args:
+- lat: latitude in deg.
+- lon: longitude in deg.
+- zoom: zoom level from 1 to 23.</p>
+</dd></dl>
+
+</section>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2023, Ladybug Tools.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.3.0.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>
